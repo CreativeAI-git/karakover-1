@@ -113,7 +113,7 @@
                               <!--<option value="<?php echo $value['id']; ?>" >  -->
                                  <?php //echo $value['album_type']; ?>
                               <!--</option>-->
-                              <?php// } } ?>
+                              <?php // } } ?>
                            <!--</select>-->
                         <!--</td>-->
                         <!--<td>-->
@@ -122,7 +122,7 @@
                               <?php  
                                  //if(!empty($your_mood)){ foreach($your_mood as $value){ ?>
                                   <!--<option value="<?php echo $value['id']; ?>" >  -->
-                                    <?php// echo $value['mood_type']; ?>
+                                    <?php // echo $value['mood_type']; ?>
                                   <!--</option>-->
                               <?php //} } ?>
                            <!--</select>-->
@@ -144,7 +144,7 @@
                         <select name="category" class="form-control">
                               <option value="easy">Easy</option>
                               <option value="medium">Medium</option>
-                              <option value="hight">Hight</option>
+                              <option value="high">High</option>
                            </select>
                         </td>
                      </tr>

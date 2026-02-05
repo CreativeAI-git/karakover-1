@@ -194,7 +194,7 @@
                                         <select name="category" class="form-control">
                                             <option value="easy">Easy</option>
                                             <option value="medium">Medium</option>
-                                            <option value="hight">Hight</option>
+                                            <option value="high">High</option>
                                         </select>
                                     </td>
 

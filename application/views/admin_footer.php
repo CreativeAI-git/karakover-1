@@ -1203,15 +1203,16 @@
             });
         </script>
 
-        <script>
-            $(document).ready(function() {
+        <?php if ($siteUrlUri == 'songsList') { ?>
+            <script>
+                $(document).ready(function() {
 
-                // Get already initialized DataTable
-                var table = $('#dataTable').DataTable();
+                    // Get already initialized DataTable
+                    var table = $('#dataTable').DataTable();
 
-                // Move instrument filter before search
-                if ($('#instrumentFilter').length === 0) {
-                    $('#dataTable_filter').prepend(`
+                    // Move instrument filter before search
+                    if ($('#instrumentFilter').length === 0) {
+                        $('#dataTable_filter').prepend(`
                     <select id="instrumentFilter" class="form-control mr-2" style="width:220px; display:inline-block;">
                         <option value="">All Instruments</option>
                         <?php foreach ($instruments as $instrument) { ?>
@@ -1221,12 +1222,13 @@
                         <?php } ?>
                     </select>
                     `);
-                }
+                    }
 
-                // Filter logic
-                $('#instrumentFilter').on('change', function() {
-                    table.column(6).search(this.value).draw(); // instrument column index
+                    // Filter logic
+                    $('#instrumentFilter').on('change', function() {
+                        table.column(6).search(this.value).draw(); // instrument column index
+                    });
+
                 });
-
-            });
-        </script>
+            </script>
+        <?php } ?>

@@ -711,6 +711,27 @@ form.user .form-control-user:focus {
     border: 1.5px dashed #dd68a3;
     background-color: rgb(221 104 163 / 45%);
 }
+
+.gl_purple_brdr {
+    border: 1.5px dashed #9b6cff;
+    background-color: rgb(155 108 255 / 45%);
+}
+
+.gl_green_brdr {
+    border: 1.5px dashed #4caf50;
+    background-color: rgb(76 175 80 / 45%);
+}
+
+.gl_orange_brdr {
+    border: 1.5px dashed #ff9800;
+    background-color: rgb(255 152 0 / 45%);
+}
+
+.gl_teal_brdr {
+    border: 1.5px dashed #00bfa5;
+    background-color: rgb(0 191 165 / 45%);
+}
+
 .gl_black_brdr {
     border: 1.5px dashed #ccccff;
     background-color: rgb(204 204 255 / 45%);
@@ -721,12 +742,17 @@ form.user .form-control-user:focus {
     border-radius: 5px;
     margin-top: 30px;
 }
-.gl_upload_text h5 {
-    color: #893032;
+.gl_upload_text h5 .gl_upload_here i{
+    color: #ffffff;
     margin-bottom: 0px;
     font-size: 14px;
     font-weight: 500;
 }
+
+.gl_upload_box h5 {
+    margin-bottom: 0px;
+}
+
 .gl_upload_text {
     display: flex;
     gap: 15px;
@@ -747,6 +773,22 @@ form.user .form-control-user:focus {
 
 .gl_barry_icon i,.gl_barry_brdr h5{
      color: #dd68a3;
+}
+
+.gl_purple_icon i,.gl_purple_brdr h5 {
+    color: #9b6cff;
+}
+
+.gl_green_icon i,.gl_green_brdr h5 {
+    color: #4caf50;
+}
+
+.gl_orange_icon i,.gl_orange_brdr h5 {
+    color: #ff9800;
+}
+
+.gl_teal_icon i,.gl_teal_brdr h5 {
+    color: #00bfa5;
 }
 
 .gl_black_icon i,.gl_black_brdr h5{

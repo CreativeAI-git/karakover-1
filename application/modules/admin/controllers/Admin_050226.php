@@ -1842,6 +1842,12 @@ class Admin extends Admin_Controller
     //Upload multiple songs method created by @Krishn on 24-04-24
     public function uploadSongsNew()
     {
+        // echo "<pre>";
+        // print_r($_FILES);
+        // print_r(error_get_last());
+        // echo "</pre>";
+        // exit;
+
         $this->form_validation->set_rules('track', 'track', 'required');
         $this->form_validation->set_rules('label', 'label', 'required');
         // $this->form_validation->set_rules('cover_image', 'cover image', 'required');
@@ -1862,15 +1868,6 @@ class Admin extends Admin_Controller
                     $chord_name = $chordfile;
                 } else {
                     $chord_name = "";
-                }
-            }
-
-            if (isset($_FILES['master_song'])) {
-                $masterSongFile = fileuploadCI('master_song', './assets/songs/');
-                if (!empty($masterSongFile)) {
-                    $masterSongFileName = $masterSongFile;
-                } else {
-                    $masterSongFileName = "";
                 }
             }
 
@@ -1908,17 +1905,6 @@ class Admin extends Admin_Controller
                         $data = array(
                             'song_id'       => $songs_id,
                             'chords_songs'  => $chord_name,
-                            'created_at'    => date('Y-m-d H:i:s')
-                        );
-
-                        $this->db->insert('tbl_music_files', $data);
-                    }
-
-                    // master_songs saved in 'tbl_music_files' table
-                    if (!empty($masterSongFileName)) {
-                        $data = array(
-                            'song_id'       => $songs_id,
-                            'master_songs'  => $masterSongFileName,
                             'created_at'    => date('Y-m-d H:i:s')
                         );
 
@@ -1974,7 +1960,7 @@ class Admin extends Admin_Controller
                 $filesCount = count($_FILES['music_file']['name']);
                 $zone_type = $_POST['zone_type'];
                 $song = $this->multiple_files();
-                $allFiles = $song[1]['image_name'] . ',' . $song[2]['image_name'] . ',' . $song[3]['image_name'] . ',' . $song[4]['image_name'] . ',' . $song[5]['image_name'] . ',' . $song[6]['image_name'] . ',' . $song[7]['image_name'] . ',' . $song[8]['image_name'] . ',' . $song[9]['image_name'] . ',' . $song[10]['image_name'] . ',' . $song[11]['image_name'] . ',' . $song[12]['image_name'];
+                $allFiles = $song[1]['image_name'] . ',' . $song[2]['image_name'] . ',' . $song[3]['image_name'] . ',' . $song[4]['image_name'] . ',' . $song[5]['image_name'] . ',' . $song[6]['image_name'] . ',' . $song[7]['image_name'] . ',' . $song[8]['image_name'];
                 $keys =  explode(',', $allFiles);
                 $allFile_name = '';
 
@@ -1999,10 +1985,7 @@ class Admin extends Admin_Controller
                             'guitar' => isset($song[6]['image_name']) ? $song[6]['image_name'] : "",
                             'keyboards' => isset($song[7]['image_name']) ? $song[7]['image_name'] : "",
                             'claps' => isset($song[8]['image_name']) ? $song[8]['image_name'] : "",
-                            'backing_track_guitar' => isset($song[9]['image_name']) ? $song[9]['image_name'] : "",
-                            'backing_track_bass' => isset($song[10]['image_name']) ? $song[10]['image_name'] : "",
-                            'backing_track_drums' => isset($song[11]['image_name']) ? $song[11]['image_name'] : "",
-                            'backing_track_keys' => isset($song[12]['image_name']) ? $song[12]['image_name'] : "",
+                            // 'back_track' => isset($song[9]['image_name']) ? $song[9]['image_name'] : "",
                             'all_file_names' => isset($allFile_name) ? ltrim($allFile_name, ',') : ""
                         );
 
@@ -2021,10 +2004,7 @@ class Admin extends Admin_Controller
                             'guitar' => isset($song[6]['image_name']) ? $song[6]['image_name'] : "",
                             'keyboards' => isset($song[7]['image_name']) ? $song[7]['image_name'] : "",
                             'claps' => isset($song[8]['image_name']) ? $song[8]['image_name'] : "",
-                            'backing_track_guitar' => isset($song[9]['image_name']) ? $song[9]['image_name'] : "",
-                            'backing_track_bass' => isset($song[10]['image_name']) ? $song[10]['image_name'] : "",
-                            'backing_track_drums' => isset($song[11]['image_name']) ? $song[11]['image_name'] : "",
-                            'backing_track_keys' => isset($song[12]['image_name']) ? $song[12]['image_name'] : "",
+                            // 'back_track' => isset($song[9]['image_name']) ? $song[9]['image_name'] : "",
                             'all_file_names' => isset($allFile_name) ? ltrim($allFile_name, ',') : "",
                             'created_at' => date('Y-m-d H:i:s')
                         );
@@ -2274,7 +2254,7 @@ class Admin extends Admin_Controller
         }
     }
 
-    //updated by @krishn on 06-02-26
+    //created by @krishn on 24-04-24
     public function editUploadSongs()
     {
         $songs_id = $this->uri->segment(3);
@@ -2365,70 +2345,37 @@ class Admin extends Admin_Controller
 
                 // multiple images inserted in 'song_images' table -- starts
                 if ($songs_id != '') {
-                    // Get existing row once
-                    $existing = $this->db
-                        ->get_where('tbl_music_files', ['song_id' => $songs_id])
-                        ->row();
-
-                    $updateData = [];
-                    $insertData = ['song_id' => $songs_id];
-
-                    // =======================
-                    // CHORDS FILE
-                    // =======================
+                    // Check if a new chords file is uploaded
                     if (isset($_FILES['chords']) && !empty($_FILES['chords']['name'])) {
 
                         $chordsFile = fileuploadCI('chords', $upload_path);
 
+                        // Get the existing row for this song_id
+                        $existing = $this->db->get_where('tbl_music_files', ['song_id' => $songs_id])->row();
+
+                        // Only delete old file if chords_songs has a value
+                        if ($existing && !empty($existing->chords_songs)) {
+                            $old_file_path = $upload_path . $existing->chords_songs;
+                            if (file_exists($old_file_path)) {
+                                unlink($old_file_path);
+                            }
+                        }
+
                         if (!empty($chordsFile)) {
 
-                            // Delete old chords file (only if updating)
-                            if ($existing && !empty($existing->chords_songs)) {
-                                $old_file = $upload_path . $existing->chords_songs;
-                                if (file_exists($old_file)) {
-                                    unlink($old_file);
-                                }
+                            if ($existing) {
+                                $data = [
+                                    'chords_songs' => $chordsFile
+                                ];
+                                $this->db->where('song_id', $songs_id);
+                                $this->db->update('tbl_music_files', $data);
+                            } else {
+                                $data = [
+                                    'song_id'      => $songs_id,
+                                    'chords_songs' => $chordsFile
+                                ];
+                                $this->db->insert('tbl_music_files', $data);
                             }
-
-                            $updateData['chords_songs'] = $chordsFile;
-                            $insertData['chords_songs'] = $chordsFile;
-                        }
-                    }
-
-                    // =======================
-                    // MASTER SONG FILE
-                    // =======================
-                    if (isset($_FILES['master_song']) && !empty($_FILES['master_song']['name'])) {
-
-                        $masterSong = fileuploadCI('master_song', $upload_path);
-
-                        if (!empty($masterSong)) {
-
-                            // Delete old master song (only if updating)
-                            if ($existing && !empty($existing->master_song)) {
-                                $old_file = $upload_path . $existing->master_song;
-                                if (file_exists($old_file)) {
-                                    unlink($old_file);
-                                }
-                            }
-
-                            $updateData['master_song'] = $masterSong;
-                            $insertData['master_song'] = $masterSong;
-                        }
-                    }
-
-                    // =======================
-                    // INSERT OR UPDATE
-                    // =======================
-                    if (!empty($updateData)) {
-
-                        if ($existing) {
-                            // UPDATE only provided fields
-                            $this->db->where('song_id', $songs_id);
-                            $this->db->update('tbl_music_files', $updateData);
-                        } else {
-                            // INSERT new row
-                            $this->db->insert('tbl_music_files', $insertData);
                         }
                     }
 
@@ -2522,10 +2469,7 @@ class Admin extends Admin_Controller
                         'guitar' =>  isset($song[6]['image_name']) ? $song[6]['image_name'] : $data['file']['guitar'],
                         'keyboards' =>  isset($song[7]['image_name']) ? $song[7]['image_name'] : $data['file']['keyboards'],
                         'claps' =>  isset($song[8]['image_name']) ? $song[8]['image_name'] : $data['file']['claps'],
-                        'backing_track_guitar' =>  isset($song[9]['image_name']) ? $song[9]['image_name'] : $data['file']['backing_track_guitar'],
-                        'backing_track_bass' =>  isset($song[10]['image_name']) ? $song[10]['image_name'] : $data['file']['backing_track_bass'],
-                        'backing_track_drums' =>  isset($song[11]['image_name']) ? $song[11]['image_name'] : $data['file']['backing_track_drums'],
-                        'backing_track_keys' =>  isset($song[12]['image_name']) ? $song[12]['image_name'] : $data['file']['backing_track_keys']
+                        // 'back_track' =>  isset($song[9]['image_name']) ? $song[9]['image_name'] : $data['file']['back_track']
                     ),
                     array('song_id' => $songs_id)
                 );
@@ -2544,7 +2488,7 @@ class Admin extends Admin_Controller
             }
         }
     }
-    // end code for update music files written by @krishn on 06-02-26 
+    // end code for add and update songs written by @krishn on 26-04-25 
 
     // public function editUploadSongs()
     // {

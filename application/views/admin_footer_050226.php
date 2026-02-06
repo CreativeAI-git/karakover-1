@@ -360,21 +360,6 @@
                 }
             }
 
-            function previewMasterSong(input) {
-                const audio = document.getElementById('audioPreview');
-
-                if (input.files && input.files[0]) {
-                    const file = input.files[0];
-                    const url = URL.createObjectURL(file);
-
-                    audio.src = url;
-                    audio.style.display = 'block';
-                } else {
-                    audio.src = '';
-                    audio.style.display = 'none';
-                }
-            }
-
             // Store selected files for each input
             const selectedFiles = {
                 drum_images: [],
@@ -535,90 +520,71 @@
                 var value = $(this).val();
                 if (value == 0) {
                     $('.gl_upload_music_bg').hide();
-                    $("#vocalfiles").hide();
-                    $("#solofiles").hide();
+                    $("#stemfiles").hide();
                     $("#bassfiles").hide();
-                    $("#clickfiles").hide();
                     $("#drumsfiles").hide();
                     $("#guitarfiles").hide();
                     $("#keyboardfiles").hide();
                     $("#masterfiles").hide();
-                    $("#backingtrackguitarfiles").hide();
-                    $("#backingtrackbassfiles").hide();
-                    $("#backingtrackdrumsfiles").hide();
-                    $("#backingtrackkeysfiles").hide();
                 } else if (value == 1) {
                     $('.gl_upload_music_bg').show();
-                    $("#vocalfiles").show();
-                    $("#solofiles").hide();
+                    $("#stemfiles").show();
                     $("#bassfiles").show();
-                    $("#clickfiles").show();
                     $("#drumsfiles").hide();
                     $("#guitarfiles").hide();
                     $("#keyboardfiles").hide();
                     $("#masterfiles").hide();
-                    $("#backingtrackguitarfiles").show();
-                    $("#backingtrackbassfiles").hide();
-                    $("#backingtrackdrumsfiles").show();
-                    $("#backingtrackkeysfiles").show();
                 } else if (value == 2) {
                     $('.gl_upload_music_bg').show();
-                    $("#vocalfiles").show();
-                    $("#solofiles").hide();
+                    $("#stemfiles").show();
                     $("#bassfiles").hide();
-                    $("#clickfiles").show();
                     $("#drumsfiles").show();
                     $("#guitarfiles").hide();
                     $("#keyboardfiles").hide();
                     $("#masterfiles").hide();
-                    $("#backingtrackguitarfiles").show();
-                    $("#backingtrackbassfiles").show();
-                    $("#backingtrackdrumsfiles").hide();
-                    $("#backingtrackkeysfiles").show();
                 } else if (value == 3) {
                     $('.gl_upload_music_bg').show();
-                    $("#vocalfiles").show();
-                    $("#solofiles").hide();
-                    $("#solofiles").show();
+                    $("#stemfiles").show();
                     $("#bassfiles").hide();
-                    $("#clickfiles").show();
                     $("#drumsfiles").hide();
                     $("#guitarfiles").show();
                     $("#keyboardfiles").hide();
                     $("#masterfiles").hide();
-                    $("#backingtrackguitarfiles").hide();
-                    $("#backingtrackbassfiles").show();
-                    $("#backingtrackdrumsfiles").show();
-                    $("#backingtrackkeysfiles").show();
                 } else if (value == 4) {
                     $('.gl_upload_music_bg').show();
-                    $("#vocalfiles").show();
-                    $("#solofiles").hide();
+                    $("#stemfiles").show();
                     $("#bassfiles").hide();
-                    $("#clickfiles").show();
                     $("#drumsfiles").hide();
                     $("#guitarfiles").hide();
                     $("#keyboardfiles").show();
                     $("#masterfiles").hide();
-                    $("#backingtrackguitarfiles").show();
-                    $("#backingtrackbassfiles").show();
-                    $("#backingtrackdrumsfiles").show();
-                    $("#backingtrackkeysfiles").hide();
                 } else {
                     $('.gl_upload_music_bg').show();
-                    $("#vocalfiles").show();
-                    $("#solofiles").show();
+                    $("#stemfiles").show();
                     $("#bassfiles").show();
-                    $("#clickfiles").show();
                     $("#drumsfiles").show();
                     $("#guitarfiles").show();
                     $("#keyboardfiles").show();
                     $("#masterfiles").show();
-                    $("#backingtrackguitarfiles").hide();
-                    $("#backingtrackbassfiles").hide();
-                    $("#backingtrackdrumsfiles").hide();
-                    $("#backingtrackkeysfiles").hide();
                 }
+                // if(value == 0)
+                // {
+                //   $('.gl_upload_music_bg').hide();
+                //     $("#stemfiles").hide(); 
+                //     $("#masterfiles").hide();
+                // }
+                // else if(value == 1)
+                // {   
+                //     $('.gl_upload_music_bg').show(); 
+                //     $("#stemfiles").show(); 
+                //     $("#masterfiles").hide();
+                // } 
+                // else
+                // {
+                //     $('.gl_upload_music_bg').show();
+                //     $("#stemfiles").show(); 
+                //     $("#masterfiles").show();
+                // }
             });
 
 
@@ -684,144 +650,63 @@
                         $('.chords').html('');
                     }
 
-                    var masterSongInput = document.querySelector("#master_song");
 
-                    // Check if a file has been selected
-                    if (masterSongInput.files.length === 0 || !masterSongInput.files[0]) {
-                        $('.master_song').html('Master song file is required.');
-                        return false;
-                    }
-
-                    var file = masterSongInput.files[0];
-                    var fileSizeInBytes = file.size;
-                    var fileSizeInMb = fileSizeInBytes / (1024 * 1024);
-
-                    // Allowed audio types
-                    var allowedTypes = [
-                        'audio/mpeg', // mp3
-                        'audio/wav', // wav
-                        'audio/mp4', // m4a
-                        'audio/aac'
-                    ];
-
-                    // Check file type
-                    if (!allowedTypes.includes(file.type)) {
-                        $('.master_song').html('Please upload a valid audio file (MP3, WAV, M4A).');
-                        return false;
-                    }
-
-                    // Check file size (50 MB)
-                    if (fileSizeInMb > 50) {
-                        $('.master_song').html('The selected file is too large. Please upload a file smaller than 50 MB.');
-                        return false;
-                    } else {
-                        $('.master_song').html('');
-                    }
-
-                    // --------------------------------------------------------------------------
-                    // old code commented on 050226
-
-                    // var zone_type = $('select[name=zone_type]').val();
-                    // if (zone_type == "") {
-                    //     $('.zone_type').html('Select Zone Type is required.');
-                    //     return false;
-                    // } else {
-                    //     $('.zone_type').html('');
-                    // }
-
-                    // var input1 = document.getElementById('gl_audio_1').value;
-                    // var input2 = document.getElementById('gl_audio_2').value;
-                    // var input3 = document.getElementById('gl_audio_3').value;
-                    // var input4 = document.getElementById('gl_audio_4').value;
-                    // var input5 = document.getElementById('gl_audio_5').value;
-                    // var input6 = document.getElementById('gl_audio_6').value;
-                    // var input7 = document.getElementById('gl_audio_7').value;
-                    // var input8 = document.getElementById('gl_audio_8').value;
-                    // var input9 = document.getElementById('gl_audio_9').value;
-                    // var input10 = document.getElementById('gl_audio_10').value;
-                    // var input11 = document.getElementById('gl_audio_11').value;
-                    // var input12 = document.getElementById('gl_audio_12').value;
-
-                    // if (zone_type == 1) {
-                    //     if (input1 == "" || input3 == "" || input4 == "") {
-                    //         $('.songs-files').html('Please select all 3 files.');
-                    //         return false;
-                    //     } else {
-                    //         $('.songs-files').html('');
-                    //     }
-                    // } else if (zone_type == 2) {
-                    //     if (input1 == "" || input3 == "" || input5 == "") {
-                    //         $('.songs-files').html('Please select all 3 files.');
-                    //         return false;
-                    //     } else {
-                    //         $('.songs-files').html('');
-                    //     }
-                    // } else if (zone_type == 3) {
-                    //     if (input1 == "" || input2 == "" || input3 == "" || input6 == "") {
-                    //         $('.songs-files').html('Please select all 4 files.');
-                    //         return false;
-                    //     } else {
-                    //         $('.songs-files').html('');
-                    //     }
-                    // } else if (zone_type == 4) {
-                    //     if (input1 == "" || input3 == "" || input7 == "") {
-                    //         $('.songs-files').html('Please select all 4 files.');
-                    //         return false;
-                    //     } else {
-                    //         $('.songs-files').html('');
-                    //     }
-                    // } else {
-                    //     let inputs = [input1, input2, input3, input4, input5, input6, input7, input8];
-                    //     let missingCount = inputs.filter(val => val === "").length;
-
-                    //     if (missingCount > 0) {
-                    //         $('.songs-files').html(`Please select ${missingCount} more file(s).`);
-                    //         return false;
-                    //     } else {
-                    //         $('.songs-files').html('');
-                    //     }
-                    // }
-
-                    // old code commented on 050226
-
-                    const inputs = {};
-                    for (let i = 1; i <= 12; i++) {
-                        const el = document.getElementById(`gl_audio_${i}`);
-                        inputs[i] = el && el.files ? el.files.length : 0;
-                    }
-
-                    const zoneRules = {
-                        1: [1, 3, 4, 9, 11, 12], // Bass
-                        2: [1, 3, 5, 9, 10, 12], // Drums
-                        3: [1, 2, 3, 6, 10, 11, 12], // Guitar
-                        4: [1, 3, 7, 9, 10, 11], // Keyboard
-                        5: [1, 2, 3, 4, 5, 6, 7, 8] // Full Access
-                    };
-
-                    const zone_type = $('select[name=zone_type]').val();
-
-                    if (!zone_type) {
+                    var zone_type = $('select[name=zone_type]').val();
+                    if (zone_type == "") {
                         $('.zone_type').html('Select Zone Type is required.');
                         return false;
                     } else {
                         $('.zone_type').html('');
                     }
 
-                    const requiredFields = zoneRules[zone_type];
+                    var input1 = document.getElementById('gl_audio_1').value;
+                    var input2 = document.getElementById('gl_audio_2').value;
+                    var input3 = document.getElementById('gl_audio_3').value;
+                    var input4 = document.getElementById('gl_audio_4').value;
+                    var input5 = document.getElementById('gl_audio_5').value;
+                    var input6 = document.getElementById('gl_audio_6').value;
+                    var input7 = document.getElementById('gl_audio_7').value;
+                    var input8 = document.getElementById('gl_audio_8').value;
 
-                    if (requiredFields) {
-                        const missing = requiredFields.filter(i => inputs[i] === 0);
+                    if (zone_type == 1) {
+                        if (input1 == "" || input2 == "" || input3 == "" || input4 == "") {
+                            $('.songs-files').html('Please select all 4 files.');
+                            return false;
+                        } else {
+                            $('.songs-files').html('');
+                        }
+                    } else if (zone_type == 2) {
+                        if (input1 == "" || input2 == "" || input3 == "" || input5 == "") {
+                            $('.songs-files').html('Please select all 4 files.');
+                            return false;
+                        } else {
+                            $('.songs-files').html('');
+                        }
+                    } else if (zone_type == 3) {
+                        if (input1 == "" || input2 == "" || input3 == "" || input6 == "") {
+                            $('.songs-files').html('Please select all 4 files.');
+                            return false;
+                        } else {
+                            $('.songs-files').html('');
+                        }
+                    } else if (zone_type == 4) {
+                        if (input1 == "" || input2 == "" || input3 == "" || input7 == "") {
+                            $('.songs-files').html('Please select all 4 files.');
+                            return false;
+                        } else {
+                            $('.songs-files').html('');
+                        }
+                    } else {
+                        let inputs = [input1, input2, input3, input4, input5, input6, input7, input8];
+                        let missingCount = inputs.filter(val => val === "").length;
 
-                        if (missing.length > 0) {
-                            $('.songs-files').html(
-                                `Please select ${missing.length} more file(s).`
-                            );
+                        if (missingCount > 0) {
+                            $('.songs-files').html(`Please select ${missingCount} more file(s).`);
                             return false;
                         } else {
                             $('.songs-files').html('');
                         }
                     }
-                    // ---------------------------------------------------------------------
 
                     actionurl = $('#mixSongs-upload-form').attr('action');
                     $.ajax({
@@ -948,6 +833,8 @@
                     if (file.files[0]) {
                         var fileSizeInBytes = file.files[0].size; // Use file.files[0].size to get the size of the selected file
                         var fileSizeInMb = fileSizeInBytes / (1024 * 1024); // Convert bytes to Megabytes
+                        // console.log('>>>>>>>>>>>>>>>111',fileSizeInBytes);
+                        // console.log('>>>>>>>>>>>>>>>222',fileSizeInMb);
                         // Checking if file size is larger than 50MB
                         if (fileSizeInMb > 50) {
                             // alert("File size is larger than 50MB.");
@@ -955,20 +842,6 @@
                             return false;
                         } else {
                             $('.chords').html('');
-                        }
-                    }
-
-                    var masterSongfile = document.querySelector("#master_song");
-                    if (masterSongfile.files[0]) {
-                        var fileSizeInBytes = masterSongfile.files[0].size; // Use file.files[0].size to get the size of the selected file
-                        var fileSizeInMb = fileSizeInBytes / (1024 * 1024); // Convert bytes to Megabytes
-                        // Checking if file size is larger than 50MB
-                        if (fileSizeInMb > 50) {
-                            // alert("File size is larger than 50MB.");
-                            $('.master_song').html('The selected file is too large. Please upload a file smaller than 50 MB.');
-                            return false;
-                        } else {
-                            $('.master_song').html('');
                         }
                     }
 
@@ -1292,70 +1165,6 @@
                             var input = event.srcElement;
                             var fileName = input.files[0].name;
                             infoArea7.textContent = fileName;
-                        }
-                    }
-
-                    ///nine box
-                    let input8 = document.getElementById('gl_audio_9');
-                    let infoArea8 = document.getElementById('file-upload-filename_9');
-                    input8.addEventListener('change', showFileName8);
-
-                    function showFileName8(event) {
-                        var file = document.querySelector("#gl_audio_9");
-                        if (/\.(wav|mp3|m4a)$/i.test(file.files[0].name) === false) {
-                            alert("Please select Mp3 file and Wav,m4a files only!");
-                        } else {
-                            var input = event.srcElement;
-                            var fileName = input.files[0].name;
-                            infoArea8.textContent = fileName;
-                        }
-                    }
-
-                    ///ten box
-                    let input9 = document.getElementById('gl_audio_10');
-                    let infoArea9 = document.getElementById('file-upload-filename_10');
-                    input9.addEventListener('change', showFileName9);
-
-                    function showFileName9(event) {
-                        var file = document.querySelector("#gl_audio_10");
-                        if (/\.(wav|mp3|m4a)$/i.test(file.files[0].name) === false) {
-                            alert("Please select Mp3 file and Wav,m4a files only!");
-                        } else {
-                            var input = event.srcElement;
-                            var fileName = input.files[0].name;
-                            infoArea9.textContent = fileName;
-                        }
-                    }
-
-                    ///eleven box
-                    let input10 = document.getElementById('gl_audio_11');
-                    let infoArea10 = document.getElementById('file-upload-filename_11');
-                    input10.addEventListener('change', showFileName10);
-
-                    function showFileName10(event) {
-                        var file = document.querySelector("#gl_audio_11");
-                        if (/\.(wav|mp3|m4a)$/i.test(file.files[0].name) === false) {
-                            alert("Please select Mp3 file and Wav,m4a files only!");
-                        } else {
-                            var input = event.srcElement;
-                            var fileName = input.files[0].name;
-                            infoArea10.textContent = fileName;
-                        }
-                    }
-
-                    ///eleven box
-                    let input11 = document.getElementById('gl_audio_12');
-                    let infoArea11 = document.getElementById('file-upload-filename_12');
-                    input11.addEventListener('change', showFileName11);
-
-                    function showFileName11(event) {
-                        var file = document.querySelector("#gl_audio_12");
-                        if (/\.(wav|mp3|m4a)$/i.test(file.files[0].name) === false) {
-                            alert("Please select Mp3 file and Wav,m4a files only!");
-                        } else {
-                            var input = event.srcElement;
-                            var fileName = input.files[0].name;
-                            infoArea11.textContent = fileName;
                         }
                     }
 

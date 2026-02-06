@@ -259,7 +259,7 @@
                                  </video>
                               <?php } ?>
                            </td> -->
-                                    <td colspan="2">
+                                    <td>
                                         Chords Upload:
                                         <input type="file" name="chords" id="chords" onchange="previewChords(this)" accept="video/*">
                                         <br>
@@ -282,6 +282,30 @@
 
                                         <br>
                                         <span class="error_msg chords"></span>
+                                    </td>
+                                    <td>
+                                        Master Song:
+                                        <input type="file" name="master_song" id="master_song" onchange="previewMasterSong(this)" accept="audio/*">
+                                        <br>
+
+                                        <!-- Preview new selected file -->
+                                        <audio id="audioPreview" style="display:none; width: 200px; margin-top: 10px;" controls>
+                                            <source src="" type="audio/mpeg">
+                                            Your browser does not support the audio tag.
+                                        </audio>
+
+                                        <!-- Show existing uploaded audio -->
+                                        <?php if (!empty($file['master_song'])) { ?>
+                                            <br>
+                                            <label>Current Uploaded:</label><br>
+                                            <audio controls>
+                                                <source src="<?= base_url('assets/songs/' . $file['master_song']); ?>" type="audio/mpeg">
+                                                Your browser does not support the audio tag.
+                                            </audio>
+                                        <?php } ?>
+
+                                        <br>
+                                        <span class="error_msg master_song"></span>
                                     </td>
                                 </tr>
                             </table>
@@ -410,7 +434,7 @@
                                     </tr>
 
                                     <!-- <div id="deleted-files-container"></div> -->
-                                    
+
                                     <tr>
                                         <!-- <td colspan="2">clap images upload
                                             <input type="file" name="clap_images[]" id="clap_images" multiple>
@@ -422,25 +446,25 @@
 
                             <div class="gl_heading_black mt-3 mb-2">
                                 Select Zone Type
-                                <select name="zone_type" id="mySelect" class="form-control">
+                                <select name="zone_type" id="mySelect" class="form-control" disabled>
                                     <option value="">Please Select Zone Type</option>
                                     <?php
                                     if (!empty($zone)) {
-                                        foreach ($zone as $keynum => $value) {
-                                            if ($keynum == 4) { ?>
+                                        foreach ($zone as $keynum => $value) { ?>
 
-                                                <option value="<?php echo $value['id']; ?>"
-                                                    <?php if ($value['id'] == $songs['zone_type']) {
-                                                        echo "selected='selected'";
-                                                    } else {
-                                                        echo "";
-                                                    } ?>>
-                                                    <?php echo $value['layout_name']; ?>
-                                                </option>
-                                    <?php }
+                                            <option value="<?php echo $value['id']; ?>"
+                                                <?php if ($value['id'] == $songs['zone_type']) {
+                                                    echo "selected='selected'";
+                                                } else {
+                                                    echo "";
+                                                } ?>>
+                                                <?php echo $value['layout_name']; ?>
+                                            </option>
+                                    <?php
                                         }
                                     } ?>
                                 </select>
+                                <input type="hidden" name="zone_type" value="<?= $songs['zone_type']; ?>">
                                 <span class="error_msg zone_type"></span>
                             </div>
                         </div>
@@ -453,7 +477,7 @@
                     <?php } ?>>
                     <div class="gl_upload_music_div">
 
-                        <div class="stem_file" id="stemfiles" <?php if ($songs['zone_type'] >= 1) { ?>
+                        <div class="vocal_file" id="vocalfiles" <?php if ($songs['zone_type'] >= 1) { ?>
                             style="display: block;"
                             <?php } else { ?>
                             style="display: none;"
@@ -471,7 +495,13 @@
                                     <input type="file" name="music_file[1]" id="gl_audio_1">
                                 </div>
                             </label>
+                        </div>
 
+                        <div class="solo_file" id="solofiles" <?php if ($songs['zone_type'] >= 1) { ?>
+                            style="display: block;"
+                            <?php } else { ?>
+                            style="display: none;"
+                            <?php } ?>>
                             <label for="gl_audio_2">
                                 <div class="gl_upload_box gl_yellow_brdr">
                                     <div class="gl_upload_text">
@@ -484,11 +514,17 @@
                                     <input type="file" name="music_file[2]" id="gl_audio_2">
                                 </div>
                             </label>
+                        </div>
+                        <div class="click_file" id="clickfiles" <?php if ($songs['zone_type'] >= 1) { ?>
+                            style="display: block;"
+                            <?php } else { ?>
+                            style="display: none;"
+                            <?php } ?>>
 
                             <label for="gl_audio_3">
                                 <div class="gl_upload_box gl_blue_brdr">
                                     <div class="gl_upload_text">
-                                        <h5>Click_bpm</h5>
+                                        <h5>Click</h5>
                                         <div id="file-upload-filename_3" class="text-white"><?php echo $file['click_bpm']; ?></div>
                                     </div>
                                     <div class="gl_upload_here gl_blue_icon ">
@@ -523,12 +559,12 @@
                             style="display: none;"
                             <?php } ?>>
                             <label for="gl_audio_5">
-                                <div class="gl_upload_box gl_black_brdr">
+                                <div class="gl_upload_box gl_purple_brdr">
                                     <div class="gl_upload_text">
                                         <h5>Drums</h5>
                                         <div id="file-upload-filename_5" class="text-white"><?php echo $file['drums']; ?></div>
                                     </div>
-                                    <div class="gl_upload_here gl_black_icon">
+                                    <div class="gl_upload_here gl_purple_icon">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </div>
                                     <input type="file" name="music_file[5]" id="gl_audio_5">
@@ -543,12 +579,12 @@
                             <?php } ?>>
 
                             <label for="gl_audio_6">
-                                <div class="gl_upload_box gl_black_brdr">
+                                <div class="gl_upload_box gl_green_brdr">
                                     <div class="gl_upload_text">
                                         <h5>Guitar</h5>
                                         <div id="file-upload-filename_6" class="text-white"><?php echo $file['guitar']; ?></div>
                                     </div>
-                                    <div class="gl_upload_here gl_black_icon">
+                                    <div class="gl_upload_here gl_green_icon">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </div>
                                     <input type="file" name="music_file[6]" id="gl_audio_6">
@@ -561,12 +597,12 @@
                             style="display: none;"
                             <?php } ?>>
                             <label for="gl_audio_7">
-                                <div class="gl_upload_box gl_black_brdr">
+                                <div class="gl_upload_box gl_orange_brdr">
                                     <div class="gl_upload_text">
                                         <h5>Keyboard</h5>
                                         <div id="file-upload-filename_7" class="text-white"><?php echo $file['keyboards']; ?></div>
                                     </div>
-                                    <div class="gl_upload_here gl_black_icon">
+                                    <div class="gl_upload_here gl_orange_icon">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </div>
                                     <input type="file" name="music_file[7]" id="gl_audio_7">
@@ -579,19 +615,20 @@
                             style="display: none;"
                             <?php } ?>>
                             <label for="gl_audio_8">
-                                <div class="gl_upload_box gl_black_brdr">
+                                <div class="gl_upload_box gl_teal_brdr">
                                     <div class="gl_upload_text">
                                         <h5>Miscellaneous</h5>
                                         <div id="file-upload-filename_8" class="text-white"><?php echo $file['claps']; ?></div>
                                     </div>
-                                    <div class="gl_upload_here gl_black_icon">
+                                    <div class="gl_upload_here gl_teal_icon">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </div>
                                     <input type="file" name="music_file[8]" id="gl_audio_8">
                                 </div>
                             </label>
                         </div>
-                        <!-- <div class="mix_files" id="backtrackfiles" <?php if ($songs['zone_type'] >= 5) { ?>
+
+                        <div class="backing_track_files" id="backingtrackguitarfiles" <?php if ($songs['zone_type'] != 3 && $songs['zone_type'] != 5) { ?>
                             style="display: block;"
                             <?php } else { ?>
                             style="display: none;"
@@ -599,8 +636,8 @@
                             <label for="gl_audio_9">
                                 <div class="gl_upload_box gl_black_brdr">
                                     <div class="gl_upload_text">
-                                        <h5>Back Track</h5>
-                                        <div id="file-upload-filename_9" class="text-white"><?php echo $file['back_track']; ?></div>
+                                        <h5>Backing Track Guitar</h5>
+                                        <div id="file-upload-filename_9" class="text-white"><?php echo $file['backing_track_guitar']; ?></div>
                                     </div>
                                     <div class="gl_upload_here gl_black_icon">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
@@ -608,25 +645,64 @@
                                     <input type="file" name="music_file[9]" id="gl_audio_9">
                                 </div>
                             </label>
-                        </div> -->
+                        </div>
 
-                        <!--<div class="mix_files" id="masterfiles" style="display: none;">-->
+                        <div class="backing_track_files" id="backingtrackbassfiles" <?php if ($songs['zone_type'] != 1 && $songs['zone_type'] != 5) { ?>
+                            style="display: block;"
+                            <?php } else { ?>
+                            style="display: none;"
+                            <?php } ?>>
+                            <label for="gl_audio_10">
+                                <div class="gl_upload_box gl_black_brdr">
+                                    <div class="gl_upload_text">
+                                        <h5>Backing Track Bass</h5>
+                                        <div id="file-upload-filename_10" class="text-white"><?php echo $file['backing_track_bass']; ?></div>
+                                    </div>
+                                    <div class="gl_upload_here gl_black_icon">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                    </div>
+                                    <input type="file" name="music_file[10]" id="gl_audio_10">
+                                </div>
+                            </label>
+                        </div>
 
+                        <div class="backing_track_files" id="backingtrackdrumsfiles" <?php if ($songs['zone_type'] != 1 && $songs['zone_type'] != 5) { ?>
+                            style="display: block;"
+                            <?php } else { ?>
+                            style="display: none;"
+                            <?php } ?>>
+                            <label for="gl_audio_11">
+                                <div class="gl_upload_box gl_black_brdr">
+                                    <div class="gl_upload_text">
+                                        <h5>Backing Track Drums</h5>
+                                        <div id="file-upload-filename_11" class="text-white"><?php echo $file['backing_track_drums']; ?></div>
+                                    </div>
+                                    <div class="gl_upload_here gl_black_icon">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                    </div>
+                                    <input type="file" name="music_file[11]" id="gl_audio_11">
+                                </div>
+                            </label>
+                        </div>
 
-                        <!--   <label for="gl_audio_6">-->
-                        <!--      <div class="gl_upload_box gl_black_brdr">-->
-                        <!--         <div class="gl_upload_text">-->
-                        <!--            <h5>Claps</h5>-->
-                        <!--            <div id="file-upload-filename_6" class="text-white"></div>-->
-                        <!--         </div>-->
-                        <!--         <div class="gl_upload_here gl_black_icon">-->
-                        <!--            <i class="fa fa-plus" aria-hidden="true"></i>-->
-                        <!--         </div>-->
-                        <!--         <input type="file" name="music_file[6]" id="gl_audio_6" >-->
-                        <!--      </div>-->
-                        <!--   </label>-->
-
-                        <!--</div>-->
+                        <div class="backing_track_files" id="backingtrackkeysfiles" <?php if ($songs['zone_type'] != 4 && $songs['zone_type'] != 5) { ?>
+                            style="display: block;"
+                            <?php } else { ?>
+                            style="display: none;"
+                            <?php } ?>>
+                            <label for="gl_audio_12">
+                                <div class="gl_upload_box gl_black_brdr">
+                                    <div class="gl_upload_text">
+                                        <h5>Backing Track Keys</h5>
+                                        <div id="file-upload-filename_12" class="text-white"><?php echo $file['backing_track_keys']; ?></div>
+                                    </div>
+                                    <div class="gl_upload_here gl_black_icon">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                    </div>
+                                    <input type="file" name="music_file[12]" id="gl_audio_12">
+                                </div>
+                            </label>
+                        </div>
 
                         <span class="error_msg songs-files"></span>
 

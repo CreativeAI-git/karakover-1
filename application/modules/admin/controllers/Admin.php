@@ -1,7 +1,6 @@
 <?php
 ob_start();
 defined('BASEPATH') or exit('No direct script access allowed');
-use Aws\S3\S3Client;
 #[\AllowDynamicProperties]
 class Admin extends Admin_Controller
 {

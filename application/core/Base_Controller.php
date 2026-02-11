@@ -1,7 +1,7 @@
 
 <?php (defined('BASEPATH')) OR exit('No direct script access allowed');
-
 error_reporting(0);
+#[\AllowDynamicProperties]
 class Base_Controller extends CI_Controller {
 
 	public function __construct()
@@ -101,7 +101,7 @@ class Base_Controller extends CI_Controller {
 	public function generateCode($length=8)
 	{
 		if (function_exists("random_bytes")) {
-	        $bytes = random_bytes(ceil($lenght / 2));
+	        $bytes = random_bytes(ceil($length / 2));
 	    } elseif (function_exists("openssl_random_pseudo_bytes")) {
 	        $bytes = openssl_random_pseudo_bytes(ceil($length / 2));
 	    } else {

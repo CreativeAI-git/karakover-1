@@ -328,6 +328,30 @@
         </script>
 
         <script type="text/javascript">
+            // $(function() {
+            // // Multiple images preview in browser
+            // var imagesPreview = function(input, placeToInsertImagePreview) {
+
+            //     if (input.files) {
+            //         var filesAmount = input.files.length;
+
+            //         for (i = 0; i < filesAmount; i++) {
+            //             var reader = new FileReader();
+
+            //             reader.onload = function(event) {
+            //                 $($.parseHTML('<img>')).attr('src', event.target.result).appendTo(placeToInsertImagePreview);
+            //             }
+
+            //             reader.readAsDataURL(input.files[i]);
+            //         }
+            //     }
+
+            // };
+
+            // $('#gallery-photo-add').on('change', function() {
+            //     imagesPreview(this, 'div.gallery');
+            // });
+            // });
             function previewImages() {
                 var input = document.getElementById('gl_cover_art');
                 var previewContainer = document.getElementById('image-preview');
@@ -360,149 +384,57 @@
                 }
             }
 
-            function previewMasterSong(input) {
-                const audio = document.getElementById('audioPreview');
-
-                if (input.files && input.files[0]) {
-                    const file = input.files[0];
-                    const url = URL.createObjectURL(file);
-
-                    audio.src = url;
-                    audio.style.display = 'block';
-                } else {
-                    audio.src = '';
-                    audio.style.display = 'none';
-                }
-            }
-
-            // Store selected files for each input
-            const selectedFiles = {
-                drum_images: [],
-                guitar_images: [],
-                keyboard_images: [],
-                bass_images: []
-            };
-
-            // Main Preview Function
+            // created by @ krishn on 24-04-24
             function previewFiles(input, previewId) {
-                const preview = document.getElementById(previewId);
-                const errorSpan = document.querySelector(`.error_msg.${input.id}`);
-                errorSpan.innerHTML = '';
+                const previewContainer = document.getElementById(previewId);
+                previewContainer.innerHTML = ''; // Clear existing previews
 
-                if (!input.files) return;
+                const files = Array.from(input.files);
+                const newFileList = [];
 
-                const newFiles = Array.from(input.files);
-                let hasError = false;
+                files.forEach((file, index) => {
+                    const fileURL = URL.createObjectURL(file);
+                    const wrapper = document.createElement('div');
+                    wrapper.classList.add('preview-item');
 
-                if (!selectedFiles[input.id]) {
-                    selectedFiles[input.id] = [];
-                }
-
-                const existingFiles = selectedFiles[input.id];
-
-                newFiles.forEach(file => {
-                    const fileSizeMB = file.size / (1024 * 1024);
-                    const fileType = file.type;
-
-                    if (fileType.startsWith('image/')) {
-                        if (fileSizeMB > 5) {
-                            errorSpan.innerHTML = `Image "${file.name}" is too large. Max allowed is 5 MB.`;
-                            hasError = true;
-                            return;
-                        }
-                    } else if (fileType.startsWith('video/')) {
-                        if (fileSizeMB > 50) {
-                            errorSpan.innerHTML = `Video "${file.name}" is too large. Max allowed is 50 MB.`;
-                            hasError = true;
-                            return;
-                        }
-                    } else {
-                        errorSpan.innerHTML = `Unsupported file type: ${file.name}`;
-                        hasError = true;
-                        return;
+                    let element;
+                    if (file.type.startsWith('video/')) {
+                        element = document.createElement('video');
+                        element.controls = true;
+                        element.width = 150;
+                        element.innerHTML = `<source src="${fileURL}" type="${file.type}">`;
+                    } else if (file.type.startsWith('image/')) {
+                        element = document.createElement('img');
+                        element.src = fileURL;
+                        element.style.width = '100px';
+                        element.style.height = '100px';
                     }
 
-                    // Prevent duplicates
-                    if (!existingFiles.some(f => f.name === file.name && f.size === file.size)) {
-                        existingFiles.push(file);
-                    }
-                });
-
-                if (!hasError) {
-                    renderPreviews(input.id, preview);
-                }
-            }
-
-
-            // Renders previews properly (FULL REPLACE)
-            function renderPreviews(inputId, previewContainer) {
-                previewContainer.innerHTML = ""; // CLEAR old previews first
-
-                selectedFiles[inputId].forEach((file, index) => {
-                    const reader = new FileReader();
-
-                    reader.onload = function(e) {
-                        const div = document.createElement('div');
-                        div.className = 'preview-item';
-
-                        let previewHtml = '';
-
-                        if (file.type.startsWith('image/')) {
-                            previewHtml = `<img src="${e.target.result}" width="100" height="100">`;
-                        } else if (file.type.startsWith('video/')) {
-                            previewHtml = `
-                    <video width="175" height="100" controls>
-                        <source src="${e.target.result}" type="${file.type}">
-                    </video>
-                `;
-                        }
-
-                        div.innerHTML = `
-                ${previewHtml}
-                <button type="button" class="remove-btn" onclick="removeNewFile('${inputId}', ${index})">×</button>
-            `;
-
-                        previewContainer.appendChild(div);
+                    const removeBtn = document.createElement('button');
+                    removeBtn.textContent = '×';
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.onclick = () => {
+                        files.splice(index, 1); // remove from original list
+                        updateFileInput(input, files); // update input
+                        previewFiles(input, previewId); // re-render preview
                     };
 
-                    reader.readAsDataURL(file);
+                    wrapper.appendChild(element);
+                    wrapper.appendChild(removeBtn);
+                    previewContainer.appendChild(wrapper);
+                    newFileList.push(file);
                 });
             }
 
-
-            // Remove File + Re-render
-            function removeNewFile(inputId, index) {
-                selectedFiles[inputId].splice(index, 1);
-
-                // PREVIEW CONTAINER MAP (corrected)
-                const previewIdMap = {
-                    drum_images: "drumPreview",
-                    guitar_images: "guitarPreview",
-                    keyboard_images: "keyboardPreview",
-                    bass_images: "bassPreview"
-                };
-
-                const preview = document.getElementById(previewIdMap[inputId]);
-                renderPreviews(inputId, preview);
+            // Helper to update the input's FileList (read-only workaround)
+            function updateFileInput(input, files) {
+                const dataTransfer = new DataTransfer();
+                files.forEach(file => dataTransfer.items.add(file));
+                input.files = dataTransfer.files;
             }
 
 
-            // Remove existing (already uploaded) file
-            function removeExistingFile(button, type, filename) {
-                if (confirm('Are you sure you want to remove this file?')) {
-                    const div = button.parentNode;
-                    div.remove();
 
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'deleted_' + type + '_files[]';
-                    input.value = filename;
-
-                    document.getElementById('mixSongs-upload-edit-form').appendChild(input);
-                }
-            }
-
-            // end code created by @krishn on 26-04-25
             function previewImages1() {
                 var input = document.getElementById('gl_cover_art1');
                 var previewContainer = document.getElementById('image-preview1');
@@ -524,7 +456,6 @@
             }
         </script>
 
-
         <?php if ($siteUrlUri == "dashboard") { ?>
 
         <?php } ?>
@@ -535,90 +466,71 @@
                 var value = $(this).val();
                 if (value == 0) {
                     $('.gl_upload_music_bg').hide();
-                    $("#vocalfiles").hide();
-                    $("#solofiles").hide();
+                    $("#stemfiles").hide();
                     $("#bassfiles").hide();
-                    $("#clickfiles").hide();
                     $("#drumsfiles").hide();
                     $("#guitarfiles").hide();
                     $("#keyboardfiles").hide();
                     $("#masterfiles").hide();
-                    $("#backingtrackguitarfiles").hide();
-                    $("#backingtrackbassfiles").hide();
-                    $("#backingtrackdrumsfiles").hide();
-                    $("#backingtrackkeysfiles").hide();
                 } else if (value == 1) {
                     $('.gl_upload_music_bg').show();
-                    $("#vocalfiles").show();
-                    $("#solofiles").hide();
+                    $("#stemfiles").show();
                     $("#bassfiles").show();
-                    $("#clickfiles").show();
                     $("#drumsfiles").hide();
                     $("#guitarfiles").hide();
                     $("#keyboardfiles").hide();
                     $("#masterfiles").hide();
-                    $("#backingtrackguitarfiles").hide();
-                    $("#backingtrackbassfiles").show();
-                    $("#backingtrackdrumsfiles").hide();
-                    $("#backingtrackkeysfiles").hide();
                 } else if (value == 2) {
                     $('.gl_upload_music_bg').show();
-                    $("#vocalfiles").show();
-                    $("#solofiles").hide();
+                    $("#stemfiles").show();
                     $("#bassfiles").hide();
-                    $("#clickfiles").show();
                     $("#drumsfiles").show();
                     $("#guitarfiles").hide();
                     $("#keyboardfiles").hide();
                     $("#masterfiles").hide();
-                    $("#backingtrackguitarfiles").hide();
-                    $("#backingtrackbassfiles").hide();
-                    $("#backingtrackdrumsfiles").show();
-                    $("#backingtrackkeysfiles").hide();
                 } else if (value == 3) {
                     $('.gl_upload_music_bg').show();
-                    $("#vocalfiles").show();
-                    $("#solofiles").hide();
-                    $("#solofiles").show();
+                    $("#stemfiles").show();
                     $("#bassfiles").hide();
-                    $("#clickfiles").show();
                     $("#drumsfiles").hide();
                     $("#guitarfiles").show();
                     $("#keyboardfiles").hide();
                     $("#masterfiles").hide();
-                    $("#backingtrackguitarfiles").show();
-                    $("#backingtrackbassfiles").hide();
-                    $("#backingtrackdrumsfiles").hide();
-                    $("#backingtrackkeysfiles").hide();
                 } else if (value == 4) {
                     $('.gl_upload_music_bg').show();
-                    $("#vocalfiles").show();
-                    $("#solofiles").hide();
+                    $("#stemfiles").show();
                     $("#bassfiles").hide();
-                    $("#clickfiles").show();
                     $("#drumsfiles").hide();
                     $("#guitarfiles").hide();
                     $("#keyboardfiles").show();
                     $("#masterfiles").hide();
-                    $("#backingtrackguitarfiles").hide();
-                    $("#backingtrackbassfiles").hide();
-                    $("#backingtrackdrumsfiles").hide();
-                    $("#backingtrackkeysfiles").show();
                 } else {
                     $('.gl_upload_music_bg').show();
-                    $("#vocalfiles").show();
-                    $("#solofiles").show();
+                    $("#stemfiles").show();
                     $("#bassfiles").show();
-                    $("#clickfiles").show();
                     $("#drumsfiles").show();
                     $("#guitarfiles").show();
                     $("#keyboardfiles").show();
                     $("#masterfiles").show();
-                    $("#backingtrackguitarfiles").hide();
-                    $("#backingtrackbassfiles").hide();
-                    $("#backingtrackdrumsfiles").hide();
-                    $("#backingtrackkeysfiles").hide();
                 }
+                // if(value == 0)
+                // {
+                //   $('.gl_upload_music_bg').hide();
+                //     $("#stemfiles").hide(); 
+                //     $("#masterfiles").hide();
+                // }
+                // else if(value == 1)
+                // {   
+                //     $('.gl_upload_music_bg').show(); 
+                //     $("#stemfiles").show(); 
+                //     $("#masterfiles").hide();
+                // } 
+                // else
+                // {
+                //     $('.gl_upload_music_bg').show();
+                //     $("#stemfiles").show(); 
+                //     $("#masterfiles").show();
+                // }
             });
 
 
@@ -684,144 +596,61 @@
                         $('.chords').html('');
                     }
 
-                    var masterSongInput = document.querySelector("#master_song");
 
-                    // Check if a file has been selected
-                    if (masterSongInput.files.length === 0 || !masterSongInput.files[0]) {
-                        $('.master_song').html('Master song file is required.');
-                        return false;
-                    }
-
-                    var file = masterSongInput.files[0];
-                    var fileSizeInBytes = file.size;
-                    var fileSizeInMb = fileSizeInBytes / (1024 * 1024);
-
-                    // Allowed audio types
-                    var allowedTypes = [
-                        'audio/mpeg', // mp3
-                        'audio/wav', // wav
-                        'audio/mp4', // m4a
-                        'audio/aac'
-                    ];
-
-                    // Check file type
-                    if (!allowedTypes.includes(file.type)) {
-                        $('.master_song').html('Please upload a valid audio file (MP3, WAV, M4A).');
-                        return false;
-                    }
-
-                    // Check file size (50 MB)
-                    if (fileSizeInMb > 50) {
-                        $('.master_song').html('The selected file is too large. Please upload a file smaller than 50 MB.');
-                        return false;
-                    } else {
-                        $('.master_song').html('');
-                    }
-
-                    // --------------------------------------------------------------------------
-                    // old code commented on 050226
-
-                    // var zone_type = $('select[name=zone_type]').val();
-                    // if (zone_type == "") {
-                    //     $('.zone_type').html('Select Zone Type is required.');
-                    //     return false;
-                    // } else {
-                    //     $('.zone_type').html('');
-                    // }
-
-                    // var input1 = document.getElementById('gl_audio_1').value;
-                    // var input2 = document.getElementById('gl_audio_2').value;
-                    // var input3 = document.getElementById('gl_audio_3').value;
-                    // var input4 = document.getElementById('gl_audio_4').value;
-                    // var input5 = document.getElementById('gl_audio_5').value;
-                    // var input6 = document.getElementById('gl_audio_6').value;
-                    // var input7 = document.getElementById('gl_audio_7').value;
-                    // var input8 = document.getElementById('gl_audio_8').value;
-                    // var input9 = document.getElementById('gl_audio_9').value;
-                    // var input10 = document.getElementById('gl_audio_10').value;
-                    // var input11 = document.getElementById('gl_audio_11').value;
-                    // var input12 = document.getElementById('gl_audio_12').value;
-
-                    // if (zone_type == 1) {
-                    //     if (input1 == "" || input3 == "" || input4 == "") {
-                    //         $('.songs-files').html('Please select all 3 files.');
-                    //         return false;
-                    //     } else {
-                    //         $('.songs-files').html('');
-                    //     }
-                    // } else if (zone_type == 2) {
-                    //     if (input1 == "" || input3 == "" || input5 == "") {
-                    //         $('.songs-files').html('Please select all 3 files.');
-                    //         return false;
-                    //     } else {
-                    //         $('.songs-files').html('');
-                    //     }
-                    // } else if (zone_type == 3) {
-                    //     if (input1 == "" || input2 == "" || input3 == "" || input6 == "") {
-                    //         $('.songs-files').html('Please select all 4 files.');
-                    //         return false;
-                    //     } else {
-                    //         $('.songs-files').html('');
-                    //     }
-                    // } else if (zone_type == 4) {
-                    //     if (input1 == "" || input3 == "" || input7 == "") {
-                    //         $('.songs-files').html('Please select all 4 files.');
-                    //         return false;
-                    //     } else {
-                    //         $('.songs-files').html('');
-                    //     }
-                    // } else {
-                    //     let inputs = [input1, input2, input3, input4, input5, input6, input7, input8];
-                    //     let missingCount = inputs.filter(val => val === "").length;
-
-                    //     if (missingCount > 0) {
-                    //         $('.songs-files').html(`Please select ${missingCount} more file(s).`);
-                    //         return false;
-                    //     } else {
-                    //         $('.songs-files').html('');
-                    //     }
-                    // }
-
-                    // old code commented on 050226
-
-                    const inputs = {};
-                    for (let i = 1; i <= 12; i++) {
-                        const el = document.getElementById(`gl_audio_${i}`);
-                        inputs[i] = el && el.files ? el.files.length : 0;
-                    }
-
-                    const zoneRules = {
-                        1: [1, 3, 4, 10], // Bass
-                        2: [1, 3, 5, 11], // Drums
-                        3: [1, 2, 3, 6, 9], // Guitar
-                        4: [1, 3, 7, 12], // Keyboard
-                        5: [1, 2, 3, 4, 5, 6, 7, 8] // Full Access
-                    };
-
-                    const zone_type = $('select[name=zone_type]').val();
-
-                    if (!zone_type) {
+                    var zone_type = $('select[name=zone_type]').val();
+                    if (zone_type == "") {
                         $('.zone_type').html('Select Zone Type is required.');
                         return false;
                     } else {
                         $('.zone_type').html('');
                     }
 
-                    const requiredFields = zoneRules[zone_type];
+                    var input1 = document.getElementById('gl_audio_1').value;
+                    var input2 = document.getElementById('gl_audio_2').value;
+                    var input3 = document.getElementById('gl_audio_3').value;
+                    var input4 = document.getElementById('gl_audio_4').value;
+                    var input5 = document.getElementById('gl_audio_5').value;
+                    var input6 = document.getElementById('gl_audio_6').value;
+                    var input7 = document.getElementById('gl_audio_7').value;
+                    var input8 = document.getElementById('gl_audio_8').value;
 
-                    if (requiredFields) {
-                        const missing = requiredFields.filter(i => inputs[i] === 0);
-
-                        if (missing.length > 0) {
-                            $('.songs-files').html(
-                                `Please select ${missing.length} more file(s).`
-                            );
+                    if (zone_type == 1) {
+                        if (input1 == "" || input2 == "" || input3 == "" || input4 == "") {
+                            $('.songs-files').html('Please select all 4 files.');
                             return false;
                         } else {
                             $('.songs-files').html('');
                         }
+                    } else if (zone_type == 2) {
+                        if (input1 == "" || input2 == "" || input3 == "" || input5 == "") {
+                            $('.songs-files').html('Please select all 4 files.');
+                            return false;
+                        } else {
+                            $('.songs-files').html('');
+                        }
+                    } else if (zone_type == 3) {
+                        if (input1 == "" || input2 == "" || input3 == "" || input6 == "") {
+                            $('.songs-files').html('Please select all 4 files.');
+                            return false;
+                        } else {
+                            $('.songs-files').html('');
+                        }
+                    } else if (zone_type == 4) {
+                        if (input1 == "" || input2 == "" || input3 == "" || input7 == "") {
+                            $('.songs-files').html('Please select all 4 files.');
+                            return false;
+                        } else {
+                            $('.songs-files').html('');
+                        }
+                    } else {
+                        // if( input1 == "" || input2 == "" || input3 == "" || input4 == "" || input5 == "" || input6 == "" || input7 == "" || input8 == "" )
+                        // {
+                        //     $('.songs-files').html('Please select all 8 files.');
+                        //     return false;
+                        // } else {
+                        //     $('.songs-files').html('');
+                        // }
                     }
-                    // ---------------------------------------------------------------------
 
                     actionurl = $('#mixSongs-upload-form').attr('action');
                     $.ajax({
@@ -847,7 +676,7 @@
                     });
                 });
 
-                //Single upload songs validation
+                //Single upload sogs validation
                 $("#singleSongs-upload-form").on('submit', function(e) {
                     e.preventDefault();
                     var track = $('#track').val();
@@ -948,6 +777,8 @@
                     if (file.files[0]) {
                         var fileSizeInBytes = file.files[0].size; // Use file.files[0].size to get the size of the selected file
                         var fileSizeInMb = fileSizeInBytes / (1024 * 1024); // Convert bytes to Megabytes
+                        // console.log('>>>>>>>>>>>>>>>111',fileSizeInBytes);
+                        // console.log('>>>>>>>>>>>>>>>222',fileSizeInMb);
                         // Checking if file size is larger than 50MB
                         if (fileSizeInMb > 50) {
                             // alert("File size is larger than 50MB.");
@@ -957,162 +788,6 @@
                             $('.chords').html('');
                         }
                     }
-
-                    var masterSongfile = document.querySelector("#master_song");
-                    if (masterSongfile.files[0]) {
-                        var fileSizeInBytes = masterSongfile.files[0].size; // Use file.files[0].size to get the size of the selected file
-                        var fileSizeInMb = fileSizeInBytes / (1024 * 1024); // Convert bytes to Megabytes
-                        // Checking if file size is larger than 50MB
-                        if (fileSizeInMb > 50) {
-                            // alert("File size is larger than 50MB.");
-                            $('.master_song').html('The selected file is too large. Please upload a file smaller than 50 MB.');
-                            return false;
-                        } else {
-                            $('.master_song').html('');
-                        }
-                    }
-
-                    // validation for bass files added by @krishn on 19-05-25
-                    document.querySelector("#bass_images").addEventListener("change", function() {
-                        const files = this.files;
-                        let isValid = true;
-                        let errorMsg = "";
-
-                        if (files.length > 0) {
-                            for (let i = 0; i < files.length; i++) {
-                                const file = files[i];
-                                const fileType = file.type;
-                                const fileSizeMB = file.size / (1024 * 1024);
-
-                                if (fileType.startsWith("image/")) {
-                                    if (fileSizeMB > 5) {
-                                        isValid = false;
-                                        errorMsg = "Each image must be less than 5 MB.";
-                                        break;
-                                    }
-                                } else if (fileType.startsWith("video/")) {
-                                    if (fileSizeMB > 50) {
-                                        isValid = false;
-                                        errorMsg = "Each video must be less than 50 MB.";
-                                        break;
-                                    }
-                                } else {
-                                    isValid = false;
-                                    errorMsg = "Only image and video files are allowed.";
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (!isValid) {
-                            $('.bass_images').html(errorMsg);
-                            this.value = ""; // Reset file input
-                        } else {
-                            $('.bass_images').html("");
-                        }
-                    });
-
-                    // validation for drum files added by @krishn on 19-05-25
-                    document.querySelector("#drum_images").addEventListener("change", function() {
-                        const files = this.files;
-                        let errorMsg = '';
-
-                        for (let i = 0; i < files.length; i++) {
-                            const file = files[i];
-                            const fileType = file.type;
-                            const fileSizeMB = file.size / (1024 * 1024);
-
-                            if (fileType.startsWith("image/")) {
-                                if (fileSizeMB > 5) {
-                                    errorMsg = `Image "${file.name}" exceeds 5 MB limit.`;
-                                    break;
-                                }
-                            } else if (fileType.startsWith("video/")) {
-                                if (fileSizeMB > 50) {
-                                    errorMsg = `Video "${file.name}" exceeds 50 MB limit.`;
-                                    break;
-                                }
-                            } else {
-                                errorMsg = `File "${file.name}" is not a supported image or video format.`;
-                                break;
-                            }
-                        }
-
-                        if (errorMsg) {
-                            $('.drum_images').html(errorMsg);
-                            this.value = ""; // Reset file input
-                        } else {
-                            $('.drum_images').html(""); // Clear previous errors
-                        }
-                    });
-
-                    // validation for guitar files added by @krishn on 19-05-25
-                    document.querySelector("#guitar_images").addEventListener("change", function() {
-                        const files = this.files;
-                        let errorMsg = '';
-
-                        for (let i = 0; i < files.length; i++) {
-                            const file = files[i];
-                            const fileType = file.type;
-                            const fileSizeMB = file.size / (1024 * 1024);
-
-                            if (fileType.startsWith("image/")) {
-                                if (fileSizeMB > 5) {
-                                    errorMsg = `Image "${file.name}" exceeds 5 MB limit.`;
-                                    break;
-                                }
-                            } else if (fileType.startsWith("video/")) {
-                                if (fileSizeMB > 50) {
-                                    errorMsg = `Video "${file.name}" exceeds 50 MB limit.`;
-                                    break;
-                                }
-                            } else {
-                                errorMsg = `File "${file.name}" is not a supported image or video format.`;
-                                break;
-                            }
-                        }
-
-                        if (errorMsg) {
-                            $('.guitar_images').html(errorMsg);
-                            this.value = ""; // Clear invalid files
-                        } else {
-                            $('.guitar_images').html("");
-                        }
-                    });
-
-                    // validation for keyboard files added by @krishn on 19-05-25
-                    document.querySelector("#keyboard_images").addEventListener("change", function() {
-                        const files = this.files;
-                        let errorMsg = '';
-
-                        for (let i = 0; i < files.length; i++) {
-                            const file = files[i];
-                            const fileType = file.type;
-                            const fileSizeMB = file.size / (1024 * 1024);
-
-                            if (fileType.startsWith("image/")) {
-                                if (fileSizeMB > 5) {
-                                    errorMsg = `Image "${file.name}" exceeds 5 MB limit.`;
-                                    break;
-                                }
-                            } else if (fileType.startsWith("video/")) {
-                                if (fileSizeMB > 50) {
-                                    errorMsg = `Video "${file.name}" exceeds 50 MB limit.`;
-                                    break;
-                                }
-                            } else {
-                                errorMsg = `File "${file.name}" is not a supported image or video format.`;
-                                break;
-                            }
-                        }
-
-                        if (errorMsg) {
-                            $('.keyboard_images').html(errorMsg);
-                            this.value = ""; // Clear invalid files
-                        } else {
-                            $('.keyboard_images').html("");
-                        }
-                    });
 
                     var zone_type = $('select[name=zone_type]').val();
                     if (zone_type == "") {
@@ -1295,70 +970,6 @@
                         }
                     }
 
-                    ///nine box
-                    let input8 = document.getElementById('gl_audio_9');
-                    let infoArea8 = document.getElementById('file-upload-filename_9');
-                    input8.addEventListener('change', showFileName8);
-
-                    function showFileName8(event) {
-                        var file = document.querySelector("#gl_audio_9");
-                        if (/\.(wav|mp3|m4a)$/i.test(file.files[0].name) === false) {
-                            alert("Please select Mp3 file and Wav,m4a files only!");
-                        } else {
-                            var input = event.srcElement;
-                            var fileName = input.files[0].name;
-                            infoArea8.textContent = fileName;
-                        }
-                    }
-
-                    ///ten box
-                    let input9 = document.getElementById('gl_audio_10');
-                    let infoArea9 = document.getElementById('file-upload-filename_10');
-                    input9.addEventListener('change', showFileName9);
-
-                    function showFileName9(event) {
-                        var file = document.querySelector("#gl_audio_10");
-                        if (/\.(wav|mp3|m4a)$/i.test(file.files[0].name) === false) {
-                            alert("Please select Mp3 file and Wav,m4a files only!");
-                        } else {
-                            var input = event.srcElement;
-                            var fileName = input.files[0].name;
-                            infoArea9.textContent = fileName;
-                        }
-                    }
-
-                    ///eleven box
-                    let input10 = document.getElementById('gl_audio_11');
-                    let infoArea10 = document.getElementById('file-upload-filename_11');
-                    input10.addEventListener('change', showFileName10);
-
-                    function showFileName10(event) {
-                        var file = document.querySelector("#gl_audio_11");
-                        if (/\.(wav|mp3|m4a)$/i.test(file.files[0].name) === false) {
-                            alert("Please select Mp3 file and Wav,m4a files only!");
-                        } else {
-                            var input = event.srcElement;
-                            var fileName = input.files[0].name;
-                            infoArea10.textContent = fileName;
-                        }
-                    }
-
-                    ///eleven box
-                    let input11 = document.getElementById('gl_audio_12');
-                    let infoArea11 = document.getElementById('file-upload-filename_12');
-                    input11.addEventListener('change', showFileName11);
-
-                    function showFileName11(event) {
-                        var file = document.querySelector("#gl_audio_12");
-                        if (/\.(wav|mp3|m4a)$/i.test(file.files[0].name) === false) {
-                            alert("Please select Mp3 file and Wav,m4a files only!");
-                        } else {
-                            var input = event.srcElement;
-                            var fileName = input.files[0].name;
-                            infoArea11.textContent = fileName;
-                        }
-                    }
-
 
                 }
 
@@ -1393,33 +1004,3 @@
                 // })
             });
         </script>
-
-        <?php if ($siteUrlUri == 'songsList') { ?>
-            <script>
-                $(document).ready(function() {
-
-                    // Get already initialized DataTable
-                    var table = $('#dataTable').DataTable();
-
-                    // Move instrument filter before search
-                    if ($('#instrumentFilter').length === 0) {
-                        $('#dataTable_filter').prepend(`
-                    <select id="instrumentFilter" class="form-control mr-2" style="width:220px; display:inline-block;">
-                        <option value="">All Instruments</option>
-                        <?php foreach ($instruments as $instrument) { ?>
-                        <option value="<?= $instrument['instrument']; ?>">
-                            <?= $instrument['instrument']; ?>
-                        </option>
-                        <?php } ?>
-                    </select>
-                    `);
-                    }
-
-                    // Filter logic
-                    $('#instrumentFilter').on('change', function() {
-                        table.column(6).search(this.value).draw(); // instrument column index
-                    });
-
-                });
-            </script>
-        <?php } ?>

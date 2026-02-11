@@ -107,7 +107,7 @@
                                 </label>
                             </div>
 
-                            <span class="error_msg  gl_cover_art_error"></span>
+                            <span class="error_msg  gl_cover_art"></span>
 
                         </div>
                         <div class=" col-md-9 ct_track_form_div mb-4">
@@ -194,7 +194,7 @@
                                         <select name="category" class="form-control">
                                             <option value="easy">Easy</option>
                                             <option value="medium">Medium</option>
-                                            <option value="high">High</option>
+                                            <option value="hight">Hight</option>
                                         </select>
                                     </td>
 
@@ -220,7 +220,7 @@
                                 </tr>
 
                                 <tr>
-                                    <td>
+                                    <td colspan="2">
                                         Chords Upload:
                                         <input type="file" name="chords" id="chords" onchange="previewChords(this)" accept="video/*">
                                         <br>
@@ -231,21 +231,6 @@
                                         <br>
                                         <span class="error_msg chords"></span>
                                     </td>
-                                    <td>
-                                        Master Song:
-                                        <input type="file" name="master_song" id="master_song" onchange="previewMasterSong(this)" accept="audio/*">
-                                        <br>
-
-                                        <audio id="audioPreview"
-                                            style="display:none; width: 200px; margin-top: 10px;"
-                                            controls>
-                                            Your browser does not support the audio element.
-                                        </audio>
-
-                                        <br>
-                                        <span class="error_msg master_song"></span>
-                                    </td>
-
                                 </tr>
 
                             </table>
@@ -314,12 +299,13 @@
                                     <option value="">Please Select Zone Type</option>
                                     <?php
                                     if (!empty($zone)) {
-                                        foreach ($zone as $keynum => $value) { ?>
+                                        foreach ($zone as $keynum => $value) {
+                                            if ($keynum == 4) { ?>
 
-                                            <option value="<?php echo $value['id']; ?>">
-                                                <?php echo $value['layout_name']; ?>
-                                            </option>
-                                    <?php
+                                                <option value="<?php echo $value['id']; ?>">
+                                                    <?php echo $value['layout_name']; ?>
+                                                </option>
+                                    <?php }
                                         }
                                     } ?>
                                 </select>
@@ -331,7 +317,8 @@
                 <div class="gl_upload_music_bg" style="display: none;">
                     <div class="gl_upload_music_div">
 
-                        <div class="vocal_file" id="vocalfiles" style="display: none;">
+                        <div class="stem_file" id="stemfiles" style="display: none;">
+
                             <label for="gl_audio_1">
                                 <div class="gl_upload_box gl_red_brdr">
                                     <div class="gl_upload_text">
@@ -344,9 +331,7 @@
                                     <input type="file" name="music_file[1]" id="gl_audio_1">
                                 </div>
                             </label>
-                        </div>
 
-                        <div class="solo_file" id="solofiles" style="display: none;">
                             <label for="gl_audio_2">
                                 <div class="gl_upload_box gl_yellow_brdr">
                                     <div class="gl_upload_text">
@@ -359,13 +344,11 @@
                                     <input type="file" name="music_file[2]" id="gl_audio_2">
                                 </div>
                             </label>
-                        </div>
 
-                        <div class="click_file" id="clickfiles" style="display: none;">
                             <label for="gl_audio_3">
                                 <div class="gl_upload_box gl_blue_brdr">
                                     <div class="gl_upload_text">
-                                        <h5>Click</h5>
+                                        <h5>Click_bpm</h5>
                                         <div id="file-upload-filename_3" class="text-white"></div>
                                     </div>
                                     <div class="gl_upload_here gl_blue_icon ">
@@ -392,12 +375,12 @@
                         </div>
                         <div class="drums_files" id="drumsfiles" style="display: none;">
                             <label for="gl_audio_5">
-                                <div class="gl_upload_box gl_purple_brdr">
+                                <div class="gl_upload_box gl_black_brdr">
                                     <div class="gl_upload_text">
                                         <h5>Drums</h5>
                                         <div id="file-upload-filename_5" class="text-white"></div>
                                     </div>
-                                    <div class="gl_upload_here gl_purple_icon">
+                                    <div class="gl_upload_here gl_black_icon">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </div>
                                     <input type="file" name="music_file[5]" id="gl_audio_5">
@@ -408,12 +391,12 @@
                         <div class="guitar_files" id="guitarfiles" style="display: none;">
 
                             <label for="gl_audio_6">
-                                <div class="gl_upload_box gl_green_brdr">
+                                <div class="gl_upload_box gl_black_brdr">
                                     <div class="gl_upload_text">
                                         <h5>Guitar</h5>
                                         <div id="file-upload-filename_6" class="text-white"></div>
                                     </div>
-                                    <div class="gl_upload_here gl_green_icon">
+                                    <div class="gl_upload_here gl_black_icon">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </div>
                                     <input type="file" name="music_file[6]" id="gl_audio_6">
@@ -422,12 +405,12 @@
                         </div>
                         <div class="keyboard_files" id="keyboardfiles" style="display: none;">
                             <label for="gl_audio_7">
-                                <div class="gl_upload_box gl_orange_brdr">
+                                <div class="gl_upload_box gl_black_brdr">
                                     <div class="gl_upload_text">
                                         <h5>Keyboard</h5>
                                         <div id="file-upload-filename_7" class="text-white"></div>
                                     </div>
-                                    <div class="gl_upload_here gl_orange_icon">
+                                    <div class="gl_upload_here gl_black_icon">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </div>
                                     <input type="file" name="music_file[7]" id="gl_audio_7">
@@ -436,12 +419,12 @@
                         </div>
                         <div class="mix_files" id="masterfiles" style="display: none;">
                             <label for="gl_audio_8">
-                                <div class="gl_upload_box gl_teal_brdr">
+                                <div class="gl_upload_box gl_black_brdr">
                                     <div class="gl_upload_text">
-                                        <h5>Miscellaneous</h5>
+                                        <h5>Claps</h5>
                                         <div id="file-upload-filename_8" class="text-white"></div>
                                     </div>
-                                    <div class="gl_upload_here gl_teal_icon">
+                                    <div class="gl_upload_here gl_black_icon">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </div>
                                     <input type="file" name="music_file[8]" id="gl_audio_8">
@@ -449,65 +432,23 @@
                             </label>
                         </div>
 
-                        <div class="backing_track_files" id="backingtrackguitarfiles" style="display: none;">
-                            <label for="gl_audio_9">
-                                <div class="gl_upload_box gl_black_brdr">
-                                    <div class="gl_upload_text">
-                                        <h5>Backing Track Guitar</h5>
-                                        <div id="file-upload-filename_9" class="text-white"></div>
-                                    </div>
-                                    <div class="gl_upload_here gl_black_icon">
-                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                    </div>
-                                    <input type="file" name="music_file[9]" id="gl_audio_9">
-                                </div>
-                            </label>
-                        </div>
+                        <!--<div class="mix_files" id="masterfiles" style="display: none;">-->
 
-                        <div class="backing_track_files" id="backingtrackbassfiles" style="display: none;">
-                            <label for="gl_audio_10">
-                                <div class="gl_upload_box gl_black_brdr">
-                                    <div class="gl_upload_text">
-                                        <h5>Backing Track Bass</h5>
-                                        <div id="file-upload-filename_10" class="text-white"></div>
-                                    </div>
-                                    <div class="gl_upload_here gl_black_icon">
-                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                    </div>
-                                    <input type="file" name="music_file[10]" id="gl_audio_10">
-                                </div>
-                            </label>
-                        </div>
 
-                        <div class="backing_track_files" id="backingtrackdrumsfiles" style="display: none;">
-                            <label for="gl_audio_11">
-                                <div class="gl_upload_box gl_black_brdr">
-                                    <div class="gl_upload_text">
-                                        <h5>Backing Track Drums</h5>
-                                        <div id="file-upload-filename_11" class="text-white"></div>
-                                    </div>
-                                    <div class="gl_upload_here gl_black_icon">
-                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                    </div>
-                                    <input type="file" name="music_file[11]" id="gl_audio_11">
-                                </div>
-                            </label>
-                        </div>
+                        <!--   <label for="gl_audio_6">-->
+                        <!--      <div class="gl_upload_box gl_black_brdr">-->
+                        <!--         <div class="gl_upload_text">-->
+                        <!--            <h5>Claps</h5>-->
+                        <!--            <div id="file-upload-filename_6" class="text-white"></div>-->
+                        <!--         </div>-->
+                        <!--         <div class="gl_upload_here gl_black_icon">-->
+                        <!--            <i class="fa fa-plus" aria-hidden="true"></i>-->
+                        <!--         </div>-->
+                        <!--         <input type="file" name="music_file[6]" id="gl_audio_6" >-->
+                        <!--      </div>-->
+                        <!--   </label>-->
 
-                        <div class="backing_track_files" id="backingtrackkeysfiles" style="display: none;">
-                            <label for="gl_audio_12">
-                                <div class="gl_upload_box gl_black_brdr">
-                                    <div class="gl_upload_text">
-                                        <h5>Backing Track Keys</h5>
-                                        <div id="file-upload-filename_12" class="text-white"></div>
-                                    </div>
-                                    <div class="gl_upload_here gl_black_icon">
-                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                    </div>
-                                    <input type="file" name="music_file[12]" id="gl_audio_12">
-                                </div>
-                            </label>
-                        </div>
+                        <!--</div>-->
 
                         <span class="error_msg songs-files"></span>
 

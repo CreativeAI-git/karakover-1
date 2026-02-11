@@ -227,7 +227,7 @@ $config['allow_get_array'] = TRUE;
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 4;
+$config['log_threshold'] = 1;
 
 /*
 |--------------------------------------------------------------------------
@@ -532,7 +532,6 @@ $config['proxy_ips'] = '';
 $config['max_post_size'] = '512M';
 $config['max_size'] = 512000; // 500MB
 $config['max_filename_increment'] = 1000;
-
 
 //add below s3 configs to your config.php file
 

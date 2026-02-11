@@ -1515,9 +1515,8 @@ class Admin extends Admin_Controller
 
 
     // //Upload multiple songs 270423
-    // public function uploadSongsNew()
+    // public function uploadSongsNew_270423()
     // {
-    //     // pred($_FILES['chord_images']['name']);
     //     $this->form_validation->set_rules('track', 'track', 'required');
     //     $this->form_validation->set_rules('label', 'label', 'required');
     //     // $this->form_validation->set_rules('cover_image', 'cover image', 'required');
@@ -1557,7 +1556,6 @@ class Admin extends Admin_Controller
     //         //     // Execute FFmpeg command
     //         //     exec($ffmpeg_command, $output, $return_code);
     //         //     // echo $unique_name;
-    //         //     // pred($return_code);
     //         //     // Check if FFmpeg command executed successfully
     //         //     if ($return_code === 0) {
     //         //         $chord_name = $unique_name;
@@ -1843,6 +1841,12 @@ class Admin extends Admin_Controller
     //Upload multiple songs method created by @Krishn on 24-04-24
     public function uploadSongsNew()
     {
+        // echo "<pre>";
+        // print_r($_FILES);
+        // print_r(error_get_last());
+        // echo "</pre>";
+        // exit;
+
         $this->form_validation->set_rules('track', 'track', 'required');
         $this->form_validation->set_rules('label', 'label', 'required');
         // $this->form_validation->set_rules('cover_image', 'cover image', 'required');
@@ -1875,6 +1879,8 @@ class Admin extends Admin_Controller
                 }
             }
 
+            // pred($_FILES);
+
             $song = array();
             $post11 = $this->common->getField('tbl_songs', $_POST);
             $result = $this->common->insertData('tbl_songs', $post11);
@@ -1904,142 +1910,346 @@ class Admin extends Admin_Controller
                         $this->db->insert('tbl_music_files', $data);
                     }
 
-                    // bass_images saved in 'song_images' table
-                    if (isset($_FILES['bass_images']) && !empty($_FILES['bass_images']['name'][0])) {
-                        $upload_path = './assets/songs/images/';
+                    // code for upload instrument files(images/videos)
+                    $upload_path = './assets/songs/images/';
 
-                        foreach ($_FILES['bass_images']['name'] as $index => $file_name) {
-                            $tmp_name = $_FILES['bass_images']['tmp_name'][$index];
-                            $extension = pathinfo($file_name, PATHINFO_EXTENSION);
-                            $unique_name = uniqid() . '.' . $extension;
+                    // Define fields
+                    $fields = [
+                        'bass' => 'bass_images',
+                        'drums' => 'drum_images',
+                        'guitar' => 'guitar_images',
+                        'keyboards' => 'keyboard_images'
+                    ];
 
-                            if (move_uploaded_file($tmp_name, $upload_path . $unique_name)) {
-                                $data = array(
-                                    'song_id'       => $songs_id,
-                                    'bass'          => $unique_name,
-                                    'created_at'    => date('Y-m-d H:i:s')
-                                );
+                    // Handle new file uploads for each field
+                    $insert_data = [];
+                    foreach ($fields as $key => $field_name) {
+                        $uploaded_files = []; // New array for each field
 
-                                $this->db->insert('song_images', $data);
+                        if (isset($_FILES[$field_name]['name']) && !empty($_FILES[$field_name]['name'][0])) {
+                            foreach ($_FILES[$field_name]['name'] as $index => $file_name) {
+                                $tmp_name = $_FILES[$field_name]['tmp_name'][$index];
+
+                                // Clean and get file extension
+                                $extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                                $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'avi', 'mov', 'webm', 'mkv'];
+
+                                if (in_array($extension, $allowed_extensions)) {
+                                    $unique_name = uniqid() . '.' . $extension;
+
+                                    if (move_uploaded_file($tmp_name, $upload_path . $unique_name)) {
+                                        $uploaded_files[] = $unique_name; // Add to uploaded files array
+                                    }
+                                }
                             }
                         }
+
+                        // Prepare insert data
+                        $insert_data[$key] = !empty($uploaded_files) ? implode(',', $uploaded_files) : '';
                     }
 
-                    // drum_images saved in 'song_images' table
-                    if (isset($_FILES['drum_images']) && !empty($_FILES['drum_images']['name'][0])) {
-                        $upload_path = './assets/songs/images/';
+                    // Finally insert
+                    $insert_data['song_id'] = $songs_id; // Add song_id
+                    $this->db->insert('song_images', $insert_data);
+                }
+            }
+            // multiple images inserted in 'song_images' table -- ends
 
-                        foreach ($_FILES['drum_images']['name'] as $index => $file_name) {
-                            $tmp_name = $_FILES['drum_images']['tmp_name'][$index];
-                            $extension = pathinfo($file_name, PATHINFO_EXTENSION);
-                            $unique_name = uniqid() . '.' . $extension;
+            if (!empty($_FILES['music_file']['name'][1])) {
+                $filesCount = count($_FILES['music_file']['name']);
+                $zone_type = $_POST['zone_type'];
+                $song = $this->multiple_files();
+                $allFiles = $song[1]['image_name'] . ',' . $song[2]['image_name'] . ',' . $song[3]['image_name'] . ',' . $song[4]['image_name'] . ',' . $song[5]['image_name'] . ',' . $song[6]['image_name'] . ',' . $song[7]['image_name'] . ',' . $song[8]['image_name'] . ',' . $song[9]['image_name'];
+                $keys =  explode(',', $allFiles);
+                $allFile_name = '';
 
-                            if (move_uploaded_file($tmp_name, $upload_path . $unique_name)) {
-                                $data = array(
-                                    'song_id'       => $songs_id,
-                                    'drums'         => $unique_name,
-                                    'created_at'    => date('Y-m-d H:i:s')
-                                );
-
-                                $this->db->insert('song_images', $data);
-                            }
-                        }
-                    }
-
-                    // guitar_images saved in 'song_images' table
-                    if (isset($_FILES['guitar_images']) && !empty($_FILES['guitar_images']['name'][0])) {
-                        $upload_path = './assets/songs/images/';
-
-                        foreach ($_FILES['guitar_images']['name'] as $index => $file_name) {
-                            $tmp_name = $_FILES['guitar_images']['tmp_name'][$index];
-                            $extension = pathinfo($file_name, PATHINFO_EXTENSION);
-                            $unique_name = uniqid() . '.' . $extension;
-
-                            if (move_uploaded_file($tmp_name, $upload_path . $unique_name)) {
-                                $data = array(
-                                    'song_id'       => $songs_id,
-                                    'guitar'        => $unique_name,
-                                    'created_at'    => date('Y-m-d H:i:s')
-                                );
-
-                                $this->db->insert('song_images', $data);
-                            }
-                        }
-                    }
-
-                    // keyboard_images saved in 'song_images' table
-                    if (isset($_FILES['keyboard_images']) && !empty($_FILES['keyboard_images']['name'][0])) {
-                        $upload_path = './assets/songs/images/';
-
-                        foreach ($_FILES['keyboard_images']['name'] as $index => $file_name) {
-                            $tmp_name = $_FILES['keyboard_images']['tmp_name'][$index];
-                            $extension = pathinfo($file_name, PATHINFO_EXTENSION);
-                            $unique_name = uniqid() . '.' . $extension;
-
-                            if (move_uploaded_file($tmp_name, $upload_path . $unique_name)) {
-                                $data = array(
-                                    'song_id'       => $songs_id,
-                                    'keyboards'     => $unique_name,
-                                    'created_at'    => date('Y-m-d H:i:s')
-                                );
-
-                                $this->db->insert('song_images', $data);
-                            }
-                        }
+                foreach ($keys as $val) {
+                    if (!empty($val)) {
+                        $allFile_name .= ',' . $val;
                     }
                 }
-                // multiple images inserted in 'song_images' table -- ends
 
-                if (!empty($_FILES['music_file']['name'][1])) {
-                    $filesCount = count($_FILES['music_file']['name']);
-                    $zone_type = $_POST['zone_type'];
-                    $song = $this->multiple_files();
-                    $allFiles = $song[1]['image_name'] . ',' . $song[2]['image_name'] . ',' . $song[3]['image_name'] . ',' . $song[4]['image_name'] . ',' . $song[5]['image_name'] . ',' . $song[6]['image_name'] . ',' . $song[7]['image_name'] . ',' . $song[8]['image_name'];
-                    $keys =  explode(',', $allFiles);
-                    $allFile_name = '';
+                if (!empty($song)) {
+                    $this->db->where('song_id', $songs_id);
+                    $existing_record = $this->db->get('tbl_music_files')->row_array();
 
-                    foreach ($keys as $val) {
-                        if (!empty($val)) {
-                            $allFile_name .= ',' . $val;
-                        }
-                    }
-
-                    if (!empty($song)) {
-                        $result1 = $this->common->insertData('tbl_music_files', array(
-                            'song_id' => $songs_id,
-                            'chords_songs' => isset($chord_name) ? $chord_name : "",
+                    if (!empty($existing_record)) {
+                        // If a record exists, update it with the new values
+                        $update_data = array(
                             'vocals' => isset($song[1]['image_name']) ? $song[1]['image_name'] : "",
                             'solo' => isset($song[2]['image_name']) ? $song[2]['image_name'] : "",
                             'click_bpm' => isset($song[3]['image_name']) ? $song[3]['image_name'] : "",
                             'bass' => isset($song[4]['image_name']) ? $song[4]['image_name'] : "",
-                            'drums' =>  isset($song[5]['image_name']) ? $song[5]['image_name'] : "",
-                            'guitar' =>  isset($song[6]['image_name']) ? $song[6]['image_name'] : "",
-                            'keyboards' =>  isset($song[7]['image_name']) ? $song[7]['image_name'] : "",
-                            'claps' =>  isset($song[8]['image_name']) ? $song[8]['image_name'] : "",
-                            'all_file_names' => isset($allFile_name) ? substr($allFile_name, 1) : "",
-                            'created_at' => date('Y-m-d h:i:s')
-                        ));
+                            'drums' => isset($song[5]['image_name']) ? $song[5]['image_name'] : "",
+                            'guitar' => isset($song[6]['image_name']) ? $song[6]['image_name'] : "",
+                            'keyboards' => isset($song[7]['image_name']) ? $song[7]['image_name'] : "",
+                            'claps' => isset($song[8]['image_name']) ? $song[8]['image_name'] : "",
+                            'back_track' => isset($song[9]['image_name']) ? $song[9]['image_name'] : "",
+                            'all_file_names' => isset($allFile_name) ? ltrim($allFile_name, ',') : ""
+                        );
+
+                        $this->db->where('song_id', $songs_id);
+                        $this->db->update('tbl_music_files', $update_data);
+                    } else {
+                        // Insert new record if not exists
+                        $insert_data = array(
+                            'song_id' => $songs_id,
+                            'chords_songs' => !empty($chord_name) ? $chord_name : "",
+                            'vocals' => isset($song[1]['image_name']) ? $song[1]['image_name'] : "",
+                            'solo' => isset($song[2]['image_name']) ? $song[2]['image_name'] : "",
+                            'click_bpm' => isset($song[3]['image_name']) ? $song[3]['image_name'] : "",
+                            'bass' => isset($song[4]['image_name']) ? $song[4]['image_name'] : "",
+                            'drums' => isset($song[5]['image_name']) ? $song[5]['image_name'] : "",
+                            'guitar' => isset($song[6]['image_name']) ? $song[6]['image_name'] : "",
+                            'keyboards' => isset($song[7]['image_name']) ? $song[7]['image_name'] : "",
+                            'claps' => isset($song[8]['image_name']) ? $song[8]['image_name'] : "",
+                            'back_track' => isset($song[9]['image_name']) ? $song[9]['image_name'] : "",
+                            'all_file_names' => isset($allFile_name) ? ltrim($allFile_name, ',') : "",
+                            'created_at' => date('Y-m-d H:i:s')
+                        );
+
+                        $this->common->insertData('tbl_music_files', $insert_data);
                     }
 
-                    $notifymessage = array('data' => $_POST['track'] . ' song is added in your play list');
-                    $notifydone =  $this->send_notificationnew($userIds, $notifymessage);
-                    // $this->session->set_flashdata('success', 'Upload data successfully');
-                    $response['type'] = 'success';
-                    $response['msg'] = 'Upload data successfully';
-                    $response['notification'] = $notifydone;
-                    $response['redirect'] = base_url('admin/songsList');
-                    // 'http://44.197.223.72/admin/songsList' ;
-                    echo json_encode($response, true);
-                } else {
-                    // $this->session->set_flashdata('error', 'Some Error occured.');
-                    $response['type'] = 'error';
-                    $response['msg'] = 'data not uploaded';
-                    $response['notification'] = 'no data';
-                    $response['redirect'] = base_url('admin/songsList');
-                    echo json_encode($response, true);
+                    // $result1 = $this->common->insertData('tbl_music_files', array(
+                    //     'song_id' => $songs_id,
+                    //     'chords_songs' => !empty($chord_name) ? $chord_name : "",
+                    //     'vocals' => isset($song[1]['image_name']) ? $song[1]['image_name'] : "",
+                    //     'solo' => isset($song[2]['image_name']) ? $song[2]['image_name'] : "",
+                    //     'click_bpm' => isset($song[3]['image_name']) ? $song[3]['image_name'] : "",
+                    //     'bass' => isset($song[4]['image_name']) ? $song[4]['image_name'] : "",
+                    //     'drums' =>  isset($song[5]['image_name']) ? $song[5]['image_name'] : "",
+                    //     'guitar' =>  isset($song[6]['image_name']) ? $song[6]['image_name'] : "",
+                    //     'keyboards' =>  isset($song[7]['image_name']) ? $song[7]['image_name'] : "",
+                    //     'claps' =>  isset($song[8]['image_name']) ? $song[8]['image_name'] : "",
+                    //     'back_track' =>  isset($song[9]['image_name']) ? $song[9]['image_name'] : "",
+                    //     'all_file_names' => isset($allFile_name) ? substr($allFile_name, 1) : "",
+                    //     'created_at' => date('Y-m-d h:i:s')
+                    // ));
                 }
-                // redirect(base_url('admin/songsList'), 'refresh');
+
+                $notifymessage = array('data' => $_POST['track'] . ' song is added in your play list');
+                $notifydone =  $this->send_notificationnew($userIds, $notifymessage);
+                // $this->session->set_flashdata('success', 'Upload data successfully');
+                $response['type'] = 'success';
+                $response['msg'] = 'Upload data successfully';
+                $response['notification'] = $notifydone;
+                $response['redirect'] = base_url('admin/songsList');
+                // 'http://44.197.223.72/admin/songsList' ;
+                echo json_encode($response, true);
+            } else {
+                // $this->session->set_flashdata('error', 'Some Error occured.');
+                $response['type'] = 'error';
+                $response['msg'] = 'data not uploaded';
+                $response['notification'] = 'no data';
+                $response['redirect'] = base_url('admin/songsList');
+                echo json_encode($response, true);
             }
+            // redirect(base_url('admin/songsList'), 'refresh');
+        }
+    }
+
+    public function uploadSongsNew111225()
+    {
+        $this->form_validation->set_rules('track', 'track', 'required');
+        $this->form_validation->set_rules('label', 'label', 'required');
+        // $this->form_validation->set_rules('cover_image', 'cover image', 'required');
+        $this->form_validation->set_rules('zone_type', 'zone type', 'required');
+        $this->form_validation->set_rules('release_year', 'release year', 'required');
+
+        if ($this->form_validation->run() == false) {
+            $data['artist'] = $this->common->getData('tbl_artists', array(), array());
+            $data['genre'] = $this->common->getData('tbl_genre', array(), array());
+            $data['album'] = $this->common->getData('tbl_albums', array(), array());
+            $data['your_mood'] = $this->common->getData('tbl_your_mood', array(), array());
+            $data['zone'] = $this->common->getData('tbl_music_zones_types', array(), array());
+            $this->adminHtml('Upload Mix Songs', 'uploadsongs-list', $data);
+        } else {
+            if (isset($_FILES['chords'])) {
+                $chordfile = fileuploadCI('chords', './assets/songs/');
+                if (!empty($chordfile)) {
+                    $chord_name = $chordfile;
+                } else {
+                    $chord_name = "";
+                }
+            }
+
+            if (isset($_FILES['cover_image'])) {
+                $image_name = fileuploadCI('cover_image', './assets/cover/');
+                if (!empty($image_name)) {
+                    $_POST['cover_image'] = $image_name;
+                } else {
+                    $_POST['cover_image'] = "";
+                }
+            }
+
+            // pred($_FILES);
+
+            $song = array();
+            $post11 = $this->common->getField('tbl_songs', $_POST);
+            $result = $this->common->insertData('tbl_songs', $post11);
+            if ($result) {
+                $songs_id = $this->db->insert_id();
+                // 12012024 notification section add //
+                $userArray = $this->common->getData('tbl_users', array('fcm_token !=' => ''));
+                $userIds = array();
+                // Loop through the main array and extract IDs
+                foreach ($userArray as $user) {
+                    $userIds[] = $user['fcm_token'];
+                    $notifydetail = array('receiver_id' => $user['id'], 'message' => 'Hey ' . $user['firstname'] . ', You got new song in your playlist. Start Mixing');
+                    $result1 = $this->common->insertData('tbl_notification', $notifydetail);
+                }
+                // 12012024 notification section add //
+
+                // multiple images inserted in 'song_images' table -- starts
+                if ($songs_id != '') {
+                    // chords_songs saved in 'tbl_music_files' table
+                    if (!empty($chord_name)) {
+                        $data = array(
+                            'song_id'       => $songs_id,
+                            'chords_songs'  => $chord_name,
+                            'created_at'    => date('Y-m-d H:i:s')
+                        );
+
+                        $this->db->insert('tbl_music_files', $data);
+                    }
+
+                    // code for upload instrument files(images/videos)
+                    $upload_path = './assets/songs/images/';
+
+                    // Define fields
+                    $fields = [
+                        'bass' => 'bass_images',
+                        'drums' => 'drum_images',
+                        'guitar' => 'guitar_images',
+                        'keyboards' => 'keyboard_images'
+                    ];
+
+                    // Handle new file uploads for each field
+                    $insert_data = [];
+                    foreach ($fields as $key => $field_name) {
+                        $uploaded_files = []; // New array for each field
+
+                        if (isset($_FILES[$field_name]['name']) && !empty($_FILES[$field_name]['name'][0])) {
+                            foreach ($_FILES[$field_name]['name'] as $index => $file_name) {
+                                $tmp_name = $_FILES[$field_name]['tmp_name'][$index];
+
+                                // Clean and get file extension
+                                $extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                                $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'avi', 'mov', 'webm', 'mkv'];
+
+                                if (in_array($extension, $allowed_extensions)) {
+                                    $unique_name = uniqid() . '.' . $extension;
+
+                                    if (move_uploaded_file($tmp_name, $upload_path . $unique_name)) {
+                                        $uploaded_files[] = $unique_name; // Add to uploaded files array
+                                    }
+                                }
+                            }
+                        }
+
+                        // Prepare insert data
+                        $insert_data[$key] = !empty($uploaded_files) ? implode(',', $uploaded_files) : '';
+                    }
+
+                    // Finally insert
+                    $insert_data['song_id'] = $songs_id; // Add song_id
+                    $this->db->insert('song_images', $insert_data);
+                }
+            }
+            // multiple images inserted in 'song_images' table -- ends
+
+            if (!empty($_FILES['music_file']['name'][1])) {
+                $filesCount = count($_FILES['music_file']['name']);
+                $zone_type = $_POST['zone_type'];
+                $song = $this->multiple_files();
+                $allFiles = $song[1]['image_name'] . ',' . $song[2]['image_name'] . ',' . $song[3]['image_name'] . ',' . $song[4]['image_name'] . ',' . $song[5]['image_name'] . ',' . $song[6]['image_name'] . ',' . $song[7]['image_name'] . ',' . $song[8]['image_name'] . ',' . $song[9]['image_name'];
+                $keys =  explode(',', $allFiles);
+                $allFile_name = '';
+
+                foreach ($keys as $val) {
+                    if (!empty($val)) {
+                        $allFile_name .= ',' . $val;
+                    }
+                }
+
+                if (!empty($song)) {
+                    $this->db->where('song_id', $songs_id);
+                    $existing_record = $this->db->get('tbl_music_files')->row_array();
+
+                    if (!empty($existing_record)) {
+                        // If a record exists, update it with the new values
+                        $update_data = array(
+                            'vocals' => isset($song[1]['image_name']) ? $song[1]['image_name'] : "",
+                            'solo' => isset($song[2]['image_name']) ? $song[2]['image_name'] : "",
+                            'click_bpm' => isset($song[3]['image_name']) ? $song[3]['image_name'] : "",
+                            'bass' => isset($song[4]['image_name']) ? $song[4]['image_name'] : "",
+                            'drums' => isset($song[5]['image_name']) ? $song[5]['image_name'] : "",
+                            'guitar' => isset($song[6]['image_name']) ? $song[6]['image_name'] : "",
+                            'keyboards' => isset($song[7]['image_name']) ? $song[7]['image_name'] : "",
+                            'claps' => isset($song[8]['image_name']) ? $song[8]['image_name'] : "",
+                            'back_track' => isset($song[9]['image_name']) ? $song[9]['image_name'] : "",
+                            'all_file_names' => isset($allFile_name) ? ltrim($allFile_name, ',') : ""
+                        );
+
+                        $this->db->where('song_id', $songs_id);
+                        $this->db->update('tbl_music_files', $update_data);
+                    } else {
+                        // Insert new record if not exists
+                        $insert_data = array(
+                            'song_id' => $songs_id,
+                            'chords_songs' => !empty($chord_name) ? $chord_name : "",
+                            'vocals' => isset($song[1]['image_name']) ? $song[1]['image_name'] : "",
+                            'solo' => isset($song[2]['image_name']) ? $song[2]['image_name'] : "",
+                            'click_bpm' => isset($song[3]['image_name']) ? $song[3]['image_name'] : "",
+                            'bass' => isset($song[4]['image_name']) ? $song[4]['image_name'] : "",
+                            'drums' => isset($song[5]['image_name']) ? $song[5]['image_name'] : "",
+                            'guitar' => isset($song[6]['image_name']) ? $song[6]['image_name'] : "",
+                            'keyboards' => isset($song[7]['image_name']) ? $song[7]['image_name'] : "",
+                            'claps' => isset($song[8]['image_name']) ? $song[8]['image_name'] : "",
+                            'back_track' => isset($song[9]['image_name']) ? $song[9]['image_name'] : "",
+                            'all_file_names' => isset($allFile_name) ? ltrim($allFile_name, ',') : "",
+                            'created_at' => date('Y-m-d H:i:s')
+                        );
+
+                        $this->common->insertData('tbl_music_files', $insert_data);
+                    }
+
+                    // $result1 = $this->common->insertData('tbl_music_files', array(
+                    //     'song_id' => $songs_id,
+                    //     'chords_songs' => !empty($chord_name) ? $chord_name : "",
+                    //     'vocals' => isset($song[1]['image_name']) ? $song[1]['image_name'] : "",
+                    //     'solo' => isset($song[2]['image_name']) ? $song[2]['image_name'] : "",
+                    //     'click_bpm' => isset($song[3]['image_name']) ? $song[3]['image_name'] : "",
+                    //     'bass' => isset($song[4]['image_name']) ? $song[4]['image_name'] : "",
+                    //     'drums' =>  isset($song[5]['image_name']) ? $song[5]['image_name'] : "",
+                    //     'guitar' =>  isset($song[6]['image_name']) ? $song[6]['image_name'] : "",
+                    //     'keyboards' =>  isset($song[7]['image_name']) ? $song[7]['image_name'] : "",
+                    //     'claps' =>  isset($song[8]['image_name']) ? $song[8]['image_name'] : "",
+                    //     'back_track' =>  isset($song[9]['image_name']) ? $song[9]['image_name'] : "",
+                    //     'all_file_names' => isset($allFile_name) ? substr($allFile_name, 1) : "",
+                    //     'created_at' => date('Y-m-d h:i:s')
+                    // ));
+                }
+
+                $notifymessage = array('data' => $_POST['track'] . ' song is added in your play list');
+                $notifydone =  $this->send_notificationnew($userIds, $notifymessage);
+                // $this->session->set_flashdata('success', 'Upload data successfully');
+                $response['type'] = 'success';
+                $response['msg'] = 'Upload data successfully';
+                $response['notification'] = $notifydone;
+                $response['redirect'] = base_url('admin/songsList');
+                // 'http://44.197.223.72/admin/songsList' ;
+                echo json_encode($response, true);
+            } else {
+                // $this->session->set_flashdata('error', 'Some Error occured.');
+                $response['type'] = 'error';
+                $response['msg'] = 'data not uploaded';
+                $response['notification'] = 'no data';
+                $response['redirect'] = base_url('admin/songsList');
+                echo json_encode($response, true);
+            }
+            // redirect(base_url('admin/songsList'), 'refresh');
         }
     }
 
@@ -2051,7 +2261,7 @@ class Admin extends Admin_Controller
         $data['songs'] = $this->common->getData('tbl_songs', array('id' => $songs_id), array('single'));
         $data['file'] = $this->common->getData('tbl_music_files', array('song_id' => $songs_id), array('single'));
 
-        // start the code for get song images
+        // Start the code for getting song images
         $instrument_images = $this->common->getData('song_images', array('song_id' => $songs_id), array());
 
         $song_images = [
@@ -2062,23 +2272,24 @@ class Admin extends Admin_Controller
         ];
 
         foreach ($instrument_images as $image) {
+            // Split CSV values into arrays
             if (!empty($image['bass'])) {
-                $song_images['bass'][] = $image['bass'];
+                $song_images['bass'] = array_merge($song_images['bass'], explode(',', $image['bass']));
             }
             if (!empty($image['drums'])) {
-                $song_images['drums'][] = $image['drums'];
+                $song_images['drums'] = array_merge($song_images['drums'], explode(',', $image['drums']));
             }
             if (!empty($image['guitar'])) {
-                $song_images['guitar'][] = $image['guitar'];
+                $song_images['guitar'] = array_merge($song_images['guitar'], explode(',', $image['guitar']));
             }
             if (!empty($image['keyboards'])) {
-                $song_images['keyboards'][] = $image['keyboards'];
+                $song_images['keyboards'] = array_merge($song_images['keyboards'], explode(',', $image['keyboards']));
             }
         }
 
         $data['song_images_grouped'] = $song_images;
+        // End the code for getting song images
 
-        // end the code for get song images
         $data['artist'] = $this->common->getData('tbl_artists', array(), array());
         $data['instrument'] = $this->common->getData('tbl_instruments', array(), array());
         $data['genre'] = $this->common->getData('tbl_genre', array(), array());
@@ -2095,6 +2306,17 @@ class Admin extends Admin_Controller
             unset($_POST["submit"]);
             $id = $this->input->post('song_id');
             unset($_POST["song_id"]);
+
+            // pred($_POST);
+            $deleteFiles = array();
+            $deleteFiles['bass'] = $_POST["deleted_bass_files"];
+            unset($_POST["deleted_bass_files"]);
+            $deleteFiles['drums'] = $_POST["deleted_drums_files"];
+            unset($_POST["deleted_drums_files"]);
+            $deleteFiles['guitar'] = $_POST["deleted_guitar_files"];
+            unset($_POST["deleted_guitar_files"]);
+            $deleteFiles['keyboards'] = $_POST["deleted_keyboards_files"];
+            unset($_POST["deleted_keyboards_files"]);
             $data['songs'] = $this->common->getData('tbl_songs', array('id' => $id), array('single'));
 
 
@@ -2117,135 +2339,127 @@ class Admin extends Admin_Controller
             if ($result) {
                 $upload_path = './assets/songs/';
                 $data['file'] = $this->common->getData('tbl_music_files', array('song_id' => $songs_id), array('single'));
-                // Check if a new chords file is uploaded
-                if (isset($_FILES['chords']) && !empty($_FILES['chords']['name'])) {
-
-                    $chordsFile = fileuploadCI('chords', $upload_path);
-
-                    // Get the existing row for this song_id
-                    $existing = $this->db->get_where('tbl_music_files', ['song_id' => $songs_id])->row();
-                    // pred($songs_id);
-
-                    // Only delete old file if chords_songs has a value
-                    if ($existing && !empty($existing->chords_songs)) {
-                        $old_file_path = $upload_path . $existing->chords_songs;
-                        if (file_exists($old_file_path)) {
-                            unlink($old_file_path);
-                        }
-                    }
-
-                    if (!empty($chordsFile)) {
-                        $data = [
-                            'song_id'      => $songs_id,
-                            'chords_songs' => $chordsFile,
-                            'created_at'   => date('Y-m-d H:i:s')
-                        ];
-
-                        if ($existing) {
-                            // Update the record directly
-                            $this->db->where('song_id', $songs_id);
-                            $this->db->update('tbl_music_files', $data);
-                        } else {
-                            // Insert a new record directly
-                            $this->db->insert('tbl_music_files', $data);
-                        }                        
-                    }
-                }
-
 
                 $song = $this->multiple_files();
 
                 // multiple images inserted in 'song_images' table -- starts
                 if ($songs_id != '') {
-                    // bass_images saved in song_images' table
-                    if (isset($_FILES['bass_images']) && !empty($_FILES['bass_images']['name'][0])) {
-                        $upload_path = './assets/songs/images/';
+                    // Check if a new chords file is uploaded
+                    if (isset($_FILES['chords']) && !empty($_FILES['chords']['name'])) {
 
-                        foreach ($_FILES['bass_images']['name'] as $index => $file_name) {
-                            $tmp_name = $_FILES['bass_images']['tmp_name'][$index];
-                            $extension = pathinfo($file_name, PATHINFO_EXTENSION);
-                            $unique_name = uniqid() . '.' . $extension;
+                        $chordsFile = fileuploadCI('chords', $upload_path);
 
-                            if (move_uploaded_file($tmp_name, $upload_path . $unique_name)) {
-                                $data = array(
-                                    'song_id'       => $songs_id,
-                                    'bass'          => $unique_name,
-                                    'created_at'    => date('Y-m-d H:i:s')
-                                );
+                        // Get the existing row for this song_id
+                        $existing = $this->db->get_where('tbl_music_files', ['song_id' => $songs_id])->row();
 
-                                $this->db->insert('song_images', $data);
+                        // Only delete old file if chords_songs has a value
+                        if ($existing && !empty($existing->chords_songs)) {
+                            $old_file_path = $upload_path . $existing->chords_songs;
+                            if (file_exists($old_file_path)) {
+                                unlink($old_file_path);
+                            }
+                        }
+
+                        if (!empty($chordsFile)) {
+
+                            if ($existing) {
+                                $data = [
+                                    'chords_songs' => $chordsFile
+                                ];
+                                $this->db->where('song_id', $songs_id);
+                                $this->db->update('tbl_music_files', $data);
+                            } else {
+                                $data = [
+                                    'song_id'      => $songs_id,
+                                    'chords_songs' => $chordsFile
+                                ];
+                                $this->db->insert('tbl_music_files', $data);
                             }
                         }
                     }
 
-                    // drum_images saved in song_images' table
-                    if (isset($_FILES['drum_images']) && !empty($_FILES['drum_images']['name'][0])) {
-                        $upload_path = './assets/songs/images/';
+                    // code for upload instrument files(images/videos)
+                    $upload_path = './assets/songs/images/';
 
-                        foreach ($_FILES['drum_images']['name'] as $index => $file_name) {
-                            $tmp_name = $_FILES['drum_images']['tmp_name'][$index];
-                            $extension = pathinfo($file_name, PATHINFO_EXTENSION);
-                            $unique_name = uniqid() . '.' . $extension;
+                    // Define fields
+                    $fields = [
+                        'bass' => 'bass_images',
+                        'drums' => 'drum_images',
+                        'guitar' => 'guitar_images',
+                        'keyboards' => 'keyboard_images'
+                    ];
 
-                            if (move_uploaded_file($tmp_name, $upload_path . $unique_name)) {
-                                $data = array(
-                                    'song_id'       => $songs_id,
-                                    'drums'         => $unique_name,
-                                    'created_at'    => date('Y-m-d H:i:s')
-                                );
+                    // Fetch old images from `song_images` table
+                    $song_images = $this->db->where('song_id', $songs_id)->get('song_images')->row();
 
-                                $this->db->insert('song_images', $data);
+                    // Initialize old_files array
+                    $old_files = [];
+                    foreach ($fields as $key => $field_name) {
+                        $old_files[$key] = !empty($song_images->$key) ? explode(',', $song_images->$key) : [];
+                    }
+
+                    // Handle file removal separately for each field
+                    foreach ($fields as $key => $field_name) {
+                        if (!empty($deleteFiles[$key])) {
+                            $deleted_files = is_array($deleteFiles[$key]) ? $deleteFiles[$key] : explode(',', $deleteFiles[$key]);
+
+                            foreach ($deleted_files as $remove_filename) {
+                                $remove_filename = trim($remove_filename);
+                                if (!empty($remove_filename)) {
+                                    $file_path = $upload_path . $remove_filename;
+
+                                    if (file_exists($file_path)) {
+                                        unlink($file_path); // delete from folder
+                                    }
+
+                                    // remove from old_files list
+                                    if (($file_key = array_search($remove_filename, $old_files[$key])) !== false) {
+                                        unset($old_files[$key][$file_key]);
+                                    }
+                                }
+                            }
+
+                            // reset index
+                            $old_files[$key] = array_values($old_files[$key]);
+                        }
+                    }
+
+                    // Handle new file uploads for each field
+                    foreach ($fields as $key => $field_name) {
+                        if (isset($_FILES[$field_name]['name']) && !empty($_FILES[$field_name]['name'][0])) {
+                            foreach ($_FILES[$field_name]['name'] as $index => $file_name) {
+                                $tmp_name = $_FILES[$field_name]['tmp_name'][$index];
+                                $extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                                $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'avi', 'mov', 'webm', 'mkv'];
+
+                                if (in_array($extension, $allowed_extensions)) {
+                                    $unique_name = uniqid() . '.' . $extension;
+                                    if (move_uploaded_file($tmp_name, $upload_path . $unique_name)) {
+                                        $old_files[$key][] = $unique_name;
+                                    }
+                                }
                             }
                         }
                     }
 
-                    // guitar_images saved in song_images' table
-                    if (isset($_FILES['guitar_images']) && !empty($_FILES['guitar_images']['name'][0])) {
-                        $upload_path = './assets/songs/images/';
-
-                        foreach ($_FILES['guitar_images']['name'] as $index => $file_name) {
-                            $tmp_name = $_FILES['guitar_images']['tmp_name'][$index];
-                            $extension = pathinfo($file_name, PATHINFO_EXTENSION);
-                            $unique_name = uniqid() . '.' . $extension;
-
-                            if (move_uploaded_file($tmp_name, $upload_path . $unique_name)) {
-                                $data = array(
-                                    'song_id'       => $songs_id,
-                                    'guitar'        => $unique_name,
-                                    'created_at'    => date('Y-m-d H:i:s')
-                                );
-
-                                $this->db->insert('song_images', $data);
-                            }
+                    // Prepare update data
+                    // pred($old_files);
+                    $update_data = [];
+                    foreach ($fields as $key => $field_name) {
+                        if (!empty($old_files[$key])) {
+                            $update_data[$key] = implode(',', $old_files[$key]);
+                        } else {
+                            $update_data[$key] = null; // set to NULL if empty
                         }
                     }
 
-                    // keyboard_images saved in song_images' table
-                    if (isset($_FILES['keyboard_images']) && !empty($_FILES['keyboard_images']['name'][0])) {
-                        $upload_path = './assets/songs/images/';
-
-                        foreach ($_FILES['keyboard_images']['name'] as $index => $file_name) {
-                            $tmp_name = $_FILES['keyboard_images']['tmp_name'][$index];
-                            $extension = pathinfo($file_name, PATHINFO_EXTENSION);
-                            $unique_name = uniqid() . '.' . $extension;
-
-                            if (move_uploaded_file($tmp_name, $upload_path . $unique_name)) {
-                                $data = array(
-                                    'song_id'       => $songs_id,
-                                    'keyboards'     => $unique_name,
-                                    'created_at'    => date('Y-m-d H:i:s')
-                                );
-
-                                $this->db->insert('song_images', $data);
-                            }
-                        }
-                    }
+                    // Update database
+                    $this->db->where('song_id', $songs_id)->update('song_images', $update_data);
                 }
 
                 $result1 = $this->common->updateData(
                     'tbl_music_files',
                     array(
-                        'chords_songs' => $_FILES['chords']['name'] ? $chord_name  : $data['file']['chords_songs'],
                         'vocals' => isset($song[1]['image_name']) ? $song[1]['image_name']  : $data['file']['vocals'],
                         'solo' => isset($song[2]['image_name']) ? $song[2]['image_name'] : $data['file']['solo'],
                         'click_bpm' => isset($song[3]['image_name']) ? $song[3]['image_name'] : $data['file']['click_bpm'],
@@ -2253,9 +2467,10 @@ class Admin extends Admin_Controller
                         'drums' =>  isset($song[5]['image_name']) ? $song[5]['image_name'] : $data['file']['drums'],
                         'guitar' =>  isset($song[6]['image_name']) ? $song[6]['image_name'] : $data['file']['guitar'],
                         'keyboards' =>  isset($song[7]['image_name']) ? $song[7]['image_name'] : $data['file']['keyboards'],
-                        'claps' =>  isset($song[8]['image_name']) ? $song[8]['image_name'] : $data['file']['claps']
+                        'claps' =>  isset($song[8]['image_name']) ? $song[8]['image_name'] : $data['file']['claps'],
+                        'back_track' =>  isset($song[9]['image_name']) ? $song[9]['image_name'] : $data['file']['back_track']
                     ),
-                    array('song_id' => $id)
+                    array('song_id' => $songs_id)
                 );
 
                 if ($result1) {
@@ -2272,6 +2487,7 @@ class Admin extends Admin_Controller
             }
         }
     }
+    // end code for add and update songs written by @krishn on 26-04-25 
 
     // public function editUploadSongs()
     // {
@@ -2386,7 +2602,6 @@ class Admin extends Admin_Controller
     //             // if (!empty($_FILES['chords']['name'])) {
     //             //     $chordfile = fileuploadCI('chords', './assets/songs/');
     //             //     if (!empty($chordfile)) {
-    //             //         // pred($chordfile);
     //             //         $chord_name = $chordfile;
     //             //     } else {
     //             //         $chord_name = "";
@@ -2409,7 +2624,6 @@ class Admin extends Admin_Controller
     //             //     // Execute FFmpeg command
     //             //     exec($ffmpeg_command, $output, $return_code);
     //             //     // echo $unique_name;
-    //             //     // pred($return_code);
     //             //     // Check if FFmpeg command executed successfully
     //             //     if ($return_code === 0) {
     //             //         $chord_name = $unique_name;

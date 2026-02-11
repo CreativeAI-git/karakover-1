@@ -38,25 +38,44 @@
               </div>
               <nav>
                 <div class="nav-mobile"><a id="navbar-toggle" href="#!"><span></span></a></div>
+                <?php
+                $segment = $this->uri->segment(1);
+                ?>
+
                 <ul class="nav-list">
+
                   <li>
-                    <a href="<?php echo site_url('/'); ?>" class="text-dark">Home</a>
+                    <a href="<?php echo site_url('/'); ?>"
+                      class="text-dark <?php echo empty($segment) ? 'active' : ''; ?>">
+                      Home
+                    </a>
                   </li>
+
                   <li>
-                    <a href="<?php echo site_url('About'); ?>" class="text-dark">About</a>
+                    <a href="<?php echo site_url('About'); ?>"
+                      class="text-dark <?php echo ($segment == 'About') ? 'active' : ''; ?>">
+                      About
+                    </a>
                   </li>
+
                   <li>
-                    <a href="<?php echo site_url('Instruments'); ?>" class="text-dark">Instruments</a>
+                    <a href="<?php echo site_url('Instruments'); ?>"
+                      class="text-dark <?php echo ($segment == 'Instruments') ? 'active' : ''; ?>">
+                      Instruments
+                    </a>
                   </li>
+
                   <li>
-                    <a href="<?php echo site_url('Tutorials'); ?>" class="text-dark">Tutorials</a>
+                    <a href="<?php echo site_url('Tutorials'); ?>"
+                      class="text-dark <?php echo ($segment == 'Tutorials') ? 'active' : ''; ?>">
+                      Tutorials
+                    </a>
                   </li>
-                  <!-- <li>
-                    <a href="<?php echo site_url('Chat_Room'); ?>"  class="text-dark">Chat Room</a>
-                  </li> -->
+
                   <div class="ct_mobile_close">
                     <i class="fa-solid fa-xmark"></i>
                   </div>
+
                 </ul>
               </nav>
             </div>

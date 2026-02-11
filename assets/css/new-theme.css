@@ -396,9 +396,9 @@ table#driverdataTable tr {
     color: #2555e0 !important;
 }
 
-.btn {
-    /* font-size: 14px;*/
-}
+/* .btn {
+    font-size: 14px;
+} */
 
 .btn-info,
 .btn-warning,

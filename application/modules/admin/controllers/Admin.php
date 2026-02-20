@@ -541,15 +541,33 @@ class Admin extends Admin_Controller
         $this->adminHtml('Privacy Policy', 'editprivacypolicy', $data);
     }
 
+    // public function genreList()
+    // {
+    //     $data['genre'] = $this->common->getData('tbl_genre', array());
+    //     $this->adminHtml('Category List', 'genre-list', $data);
+    // }
+
+    // created by @Krishn on 20-02-2026
     public function genreList()
     {
-        $data['genre'] = $this->common->getData('tbl_genre', array());
+        $options = [
+            'sort_by' => 'id',
+            'sort_direction' => 'ASC'
+        ];
+
+        $data['genre'] = $this->common->getData('tbl_genre', "", $options);
         $this->adminHtml('Category List', 'genre-list', $data);
     }
 
+    // created by @Krishn on 20-02-2026
     public function instrumentList()
     {
-        $data['instrument'] = $this->common->getData('tbl_instruments', array());
+        $options = [
+            'sort_by' => 'id',
+            'sort_direction' => 'ASC'
+        ];
+
+        $data['instrument'] = $this->common->getData('tbl_instruments', "", $options);
         $this->adminHtml('Instrument List', 'instrument-list', $data);
     }
 

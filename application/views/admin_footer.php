@@ -719,70 +719,6 @@
                     }
 
                     // --------------------------------------------------------------------------
-                    // old code commented on 050226
-
-                    // var zone_type = $('select[name=zone_type]').val();
-                    // if (zone_type == "") {
-                    //     $('.zone_type').html('Select Zone Type is required.');
-                    //     return false;
-                    // } else {
-                    //     $('.zone_type').html('');
-                    // }
-
-                    // var input1 = document.getElementById('gl_audio_1').value;
-                    // var input2 = document.getElementById('gl_audio_2').value;
-                    // var input3 = document.getElementById('gl_audio_3').value;
-                    // var input4 = document.getElementById('gl_audio_4').value;
-                    // var input5 = document.getElementById('gl_audio_5').value;
-                    // var input6 = document.getElementById('gl_audio_6').value;
-                    // var input7 = document.getElementById('gl_audio_7').value;
-                    // var input8 = document.getElementById('gl_audio_8').value;
-                    // var input9 = document.getElementById('gl_audio_9').value;
-                    // var input10 = document.getElementById('gl_audio_10').value;
-                    // var input11 = document.getElementById('gl_audio_11').value;
-                    // var input12 = document.getElementById('gl_audio_12').value;
-
-                    // if (zone_type == 1) {
-                    //     if (input1 == "" || input3 == "" || input4 == "") {
-                    //         $('.songs-files').html('Please select all 3 files.');
-                    //         return false;
-                    //     } else {
-                    //         $('.songs-files').html('');
-                    //     }
-                    // } else if (zone_type == 2) {
-                    //     if (input1 == "" || input3 == "" || input5 == "") {
-                    //         $('.songs-files').html('Please select all 3 files.');
-                    //         return false;
-                    //     } else {
-                    //         $('.songs-files').html('');
-                    //     }
-                    // } else if (zone_type == 3) {
-                    //     if (input1 == "" || input2 == "" || input3 == "" || input6 == "") {
-                    //         $('.songs-files').html('Please select all 4 files.');
-                    //         return false;
-                    //     } else {
-                    //         $('.songs-files').html('');
-                    //     }
-                    // } else if (zone_type == 4) {
-                    //     if (input1 == "" || input3 == "" || input7 == "") {
-                    //         $('.songs-files').html('Please select all 4 files.');
-                    //         return false;
-                    //     } else {
-                    //         $('.songs-files').html('');
-                    //     }
-                    // } else {
-                    //     let inputs = [input1, input2, input3, input4, input5, input6, input7, input8];
-                    //     let missingCount = inputs.filter(val => val === "").length;
-
-                    //     if (missingCount > 0) {
-                    //         $('.songs-files').html(`Please select ${missingCount} more file(s).`);
-                    //         return false;
-                    //     } else {
-                    //         $('.songs-files').html('');
-                    //     }
-                    // }
-
-                    // old code commented on 050226
 
                     const inputs = {};
                     for (let i = 1; i <= 12; i++) {
@@ -1343,7 +1279,7 @@
                         }
                     }
 
-                    ///eleven box
+                    ///twelve box
                     let input11 = document.getElementById('gl_audio_12');
                     let infoArea11 = document.getElementById('file-upload-filename_12');
                     input11.addEventListener('change', showFileName11);
@@ -1423,3 +1359,51 @@
                 });
             </script>
         <?php } ?>
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+
+                const zoneToInstrumentMap = {
+                    1: 2,
+                    2: 3,
+                    3: 1,
+                    4: 4,
+                    5: 5
+                };
+
+                function autoSelectInstrument(zoneValue) {
+
+                    const instrumentSelect = $('select[name="instrument_id"]');
+
+                    if (!instrumentSelect.length) return;
+
+                    if (zoneToInstrumentMap[zoneValue]) {
+
+                        instrumentSelect.val(zoneToInstrumentMap[zoneValue]);
+                        instrumentSelect.prop('disabled', true);
+
+                        // ensure value submits even if disabled
+                        if ($('#instrument_hidden').length === 0) {
+                            instrumentSelect.after('<input type="hidden" id="instrument_hidden" name="instrument_id">');
+                        }
+
+                        $('#instrument_hidden').val(zoneToInstrumentMap[zoneValue]);
+
+                    } else {
+                        instrumentSelect.prop('disabled', false);
+                        $('#instrument_hidden').remove();
+                    }
+                }
+
+                // On zone change
+                $('#mySelect').on('change', function() {
+                    autoSelectInstrument($(this).val());
+                });
+
+                // On page load (important for edit page)
+                if ($('#mySelect').val()) {
+                    autoSelectInstrument($('#mySelect').val());
+                }
+
+            });
+        </script>

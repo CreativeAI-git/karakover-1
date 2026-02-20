@@ -224,7 +224,7 @@
                                         </select>
                                     </td>
                                     <td>Select Instruments
-                                        <select name="instrument_id" class="form-control">
+                                        <select name="instrument_id" class="form-control" disabled>
                                             <?php
                                             if (!empty($instrument)) {
                                                 foreach ($instrument as $value) { ?>
@@ -239,6 +239,7 @@
                                             <?php }
                                             } ?>
                                         </select>
+                                        <input type="hidden" name="instrument_id" value="<?= $songs['instrument_id']; ?>">
                                     </td>
                                 </tr>
                                 <tr>

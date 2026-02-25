@@ -31,7 +31,7 @@
                 <tr>
                   <th>S.No</th>
                   <th>Instrument</th>
-                  <!-- <th>Image</th> -->
+                  <th>Image</th>
                   <th>Date/Time</th>
                   <th>Action</th>
                 </tr>
@@ -46,15 +46,15 @@
                      <td>
                       <?= $value['instrument']; ?>
                     </td>
-                     <!-- <td>
+                     <td>
                           <?php if(!empty($value['image'])){ ?>
                         
-                          <img src="<?= base_url('/assets/genre/').$value['image']; ?>" width="100" height="100">
+                          <img src="<?= base_url('/assets/instrument/').$value['image']; ?>" width="100" height="100">
                            <?php
                         }else{ ?>
                           
                         <?php }?>
-                        </td> -->
+                        </td>
                     
                     <td>
                     <?= date("d-M-Y", strtotime($value['created_at'])); ?>

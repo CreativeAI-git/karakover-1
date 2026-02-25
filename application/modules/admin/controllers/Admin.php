@@ -757,22 +757,63 @@ class Admin extends Admin_Controller
     {
         $inst_id = $this->uri->segment(3);
 
-        $this->form_validation->set_rules('instrument', 'instrument', 'required');
+        $this->form_validation->set_rules('instrument', 'Instrument', 'required');
 
         if ($this->form_validation->run() == false) {
-            $data['cat'] = $this->common->getData('tbl_instruments', array('id' => $inst_id), array('single'));
+
+            $data['cat'] = $this->common->getData(
+                'tbl_instruments',
+                array('id' => $inst_id),
+                array('single')
+            );
+
             $this->adminHtml('Update Instrument', 'edit-instrument', $data);
         } else {
+
             unset($_POST["submit"]);
-            $id = $this->input->post('id');
             unset($_POST["id"]);
 
-            $result = $this->common->updateData('tbl_instruments', $_POST, array('id' => $inst_id));
-            if ($result) {
-                $a = $this->session->set_flashdata('success', 'Data update successfully');
+            // Get old record (array result)
+            $oldData = $this->common->getData(
+                'tbl_instruments',
+                array('id' => $inst_id)
+            );
+
+            $absolute_path = './assets/instrument/';
+
+            // If new image selected
+            if (!empty($_FILES['image']['name'])) {
+
+                $image_name = fileuploadCI('image', './assets/instrument/');
+
+                // Delete old image
+                if (!empty($oldData[0]['image'])) {
+
+                    $old_image = trim($oldData[0]['image']);
+                    $old_file  = $absolute_path . $old_image;
+
+                    if (file_exists($old_file)) {
+                        unlink($old_file);
+                    }
+                }
+
+                $_POST['image'] = $image_name;
             } else {
-                $this->session->set_flashdata('danger', 'Some Error occured.');
+                unset($_POST['image']);
             }
+
+            $result = $this->common->updateData(
+                'tbl_instruments',
+                $_POST,
+                array('id' => $inst_id)
+            );
+
+            if ($result) {
+                $this->session->set_flashdata('success', 'Data updated successfully');
+            } else {
+                $this->session->set_flashdata('danger', 'Some error occurred.');
+            }
+
             redirect(base_url('admin/instrumentList'), 'refresh');
         }
     }

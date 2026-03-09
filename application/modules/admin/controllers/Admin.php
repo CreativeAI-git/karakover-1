@@ -103,6 +103,7 @@ class Admin extends Admin_Controller
 
             $result = $this->common->deleteData('tbl_songs', array('id' => $id));
             $result = $this->common->deleteData('tbl_music_files', array('song_id' => $id));
+            $result = $this->common->deleteData('recorded_songs', array('song_id' => $id));
             if ($result) {
                 $this->session->set_flashdata('success', 'Data deleted successfully');
             } else {
@@ -1557,14 +1558,15 @@ class Admin extends Admin_Controller
 
             require 'vendor/autoload.php';
 
-            $s3 = new Aws\S3\S3Client([
-                'region'  => 'us-east-1',
-                'version' => 'latest',
-                'credentials' => [
-                    'key'    => "AKIAZKVM3XCOJZCRVDB5",
-                    'secret' => "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",
-                ]
-            ]);
+            // commented for error fix
+            // $s3 = new Aws\S3\S3Client([
+            //     'region'  => 'us-east-1',
+            //     'version' => 'latest',
+            //     'credentials' => [
+            //         'key'    => "AKIAZKVM3XCOJZCRVDB5",
+            //         'secret' => "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",
+            //     ]
+            // ]);
 
             $file_type = $_FILES['image']['type'];
 

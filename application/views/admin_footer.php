@@ -652,70 +652,100 @@
                         $('.release_year').html('');
                     }
 
-                    var file = document.querySelector("#gl_cover_art");
+                    // ---------------- Cover Image Validation ----------------
+                    var coverInput = document.querySelector("#gl_cover_art");
 
-                    if (file.files[0] == undefined) {
-                        $('.gl_cover_art').html('Cover Image is required.');
+                    if (!coverInput || coverInput.files.length === 0) {
+                        $('.gl_cover_art_error').html('Cover image is required.');
                         return false;
                     } else {
-                        $('.gl_cover_art').html('');
+
+                        var coverFile = coverInput.files[0];
+                        var coverSizeMB = coverFile.size / (1024 * 1024);
+
+                        // Allowed image types
+                        var allowedImageTypes = [
+                            'image/jpeg',
+                            'image/jpg',
+                            'image/png',
+                            'image/webp'
+                        ];
+
+                        // Check extension fallback
+                        var extension = coverFile.name.split('.').pop().toLowerCase();
+                        var allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+
+                        if (!allowedImageTypes.includes(coverFile.type) && !allowedExtensions.includes(extension)) {
+                            $('.gl_cover_art_error').html('Please upload a valid image file (JPG, JPEG, PNG, WEBP).');
+                            return false;
+                        }
+
+                        // Check file size (5MB)
+                        if (coverSizeMB > 5) {
+                            $('.gl_cover_art_error').html('Image size must be less than 5 MB.');
+                            return false;
+                        } else {
+                            $('.gl_cover_art_error').html('');
+                        }
                     }
 
-                    var fileInput = document.querySelector("#chords");
+                    // ---------------- Chord File Validation ----------------
+                    var chordsInput = document.querySelector("#chords");
 
-                    // Check if a file has been selected
-                    if (fileInput.files.length === 0 || !fileInput.files[0]) {
+                    if (!chordsInput || chordsInput.files.length === 0) {
                         $('.chords').html('Chord file is required.');
                         return false;
-                    }
-
-                    var file = fileInput.files[0];
-                    var fileSizeInBytes = file.size;
-                    var fileSizeInMb = fileSizeInBytes / (1024 * 1024);
-
-                    // console.log('File size in bytes:', fileSizeInBytes);
-                    // console.log('File size in MB:', fileSizeInMb);
-
-                    // Checking if file size is larger than 50MB
-                    if (fileSizeInMb > 50) {
-                        $('.chords').html('The selected file is too large. Please upload a file smaller than 50 MB.');
-                        return false;
                     } else {
-                        $('.chords').html('');
+                        var chordFile = chordsInput.files[0];
+                        var chordSizeBytes = chordFile.size;
+                        var chordSizeMB = chordSizeBytes / (1024 * 1024);
+
+                        // Check if file size is larger than 50MB
+                        if (chordSizeMB > 50) {
+                            $('.chords').html('The selected file is too large. Please upload a file smaller than 50 MB.');
+                            return false;
+                        } else {
+                            $('.chords').html('');
+                        }
                     }
 
+
+                    // ---------------- Master Song Validation ----------------
                     var masterSongInput = document.querySelector("#master_song");
 
-                    // Check if a file has been selected
-                    if (masterSongInput.files.length === 0 || !masterSongInput.files[0]) {
+                    if (!masterSongInput || masterSongInput.files.length === 0) {
                         $('.master_song').html('Master song file is required.');
                         return false;
-                    }
-
-                    var file = masterSongInput.files[0];
-                    var fileSizeInBytes = file.size;
-                    var fileSizeInMb = fileSizeInBytes / (1024 * 1024);
-
-                    // Allowed audio types
-                    var allowedTypes = [
-                        'audio/mpeg', // mp3
-                        'audio/wav', // wav
-                        'audio/mp4', // m4a
-                        'audio/aac'
-                    ];
-
-                    // Check file type
-                    if (!allowedTypes.includes(file.type)) {
-                        $('.master_song').html('Please upload a valid audio file (MP3, WAV, M4A).');
-                        return false;
-                    }
-
-                    // Check file size (50 MB)
-                    if (fileSizeInMb > 50) {
-                        $('.master_song').html('The selected file is too large. Please upload a file smaller than 50 MB.');
-                        return false;
                     } else {
-                        $('.master_song').html('');
+
+                        var masterFile = masterSongInput.files[0];
+                        var masterFileSizeBytes = masterFile.size;
+                        var masterFileSizeMB = masterFileSizeBytes / (1024 * 1024);
+
+                        // Allowed audio types
+                        var allowedTypes = [
+                            'audio/mpeg', // mp3
+                            'audio/wav', // wav
+                            'audio/mp4', // m4a
+                            'audio/aac'
+                        ];
+
+                        // Also check extension in case MIME type is empty
+                        var fileExtension = masterFile.name.split('.').pop().toLowerCase();
+                        var allowedExtensions = ['mp3', 'wav', 'm4a', 'aac'];
+
+                        if (!allowedTypes.includes(masterFile.type) && !allowedExtensions.includes(fileExtension)) {
+                            $('.master_song').html('Please upload a valid audio file (MP3, WAV, M4A, AAC).');
+                            return false;
+                        }
+
+                        // Check file size (50MB)
+                        if (masterFileSizeMB > 50) {
+                            $('.master_song').html('The selected file is too large. Please upload a file smaller than 50 MB.');
+                            return false;
+                        } else {
+                            $('.master_song').html('');
+                        }
                     }
 
                     // --------------------------------------------------------------------------
@@ -1307,7 +1337,7 @@
                 $('.addimg_submit').click(function() {
                     var file = document.querySelector("#gl_cover_art");
                     if (file.files[0] == undefined) {
-                        $('.gl_cover_art_error').html('Image is required.');
+                        $('.gl_cover_art_error').html('Cover Image is required.');
                         return false;
                     }
                 });

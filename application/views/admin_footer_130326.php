@@ -434,17 +434,9 @@
             }
 
 
-            // Renders previews properly (optionally keep existing items)
+            // Renders previews properly (FULL REPLACE)
             function renderPreviews(inputId, previewContainer) {
-                const keepExisting = previewContainer && previewContainer.dataset && previewContainer.dataset.keepExisting === "1";
-                const existingItems = keepExisting ? Array.from(previewContainer.querySelectorAll('.preview-item.existing')) : [];
-
                 previewContainer.innerHTML = ""; // CLEAR old previews first
-
-                // Re-append existing items when editing
-                if (keepExisting && existingItems.length) {
-                    existingItems.forEach(item => previewContainer.appendChild(item));
-                }
 
                 selectedFiles[inputId].forEach((file, index) => {
                     const reader = new FileReader();
@@ -797,24 +789,12 @@
                     }
                     // ---------------------------------------------------------------------
 
-                    // Build FormData and ensure multi-select previews are sent
-                    const formData = new FormData(this);
-                    const multiFileFields = ['bass_images', 'drum_images', 'guitar_images', 'keyboard_images'];
-                    multiFileFields.forEach(field => {
-                        if (selectedFiles[field] && selectedFiles[field].length) {
-                            formData.delete(field + '[]');
-                            selectedFiles[field].forEach(file => {
-                                formData.append(field + '[]', file, file.name);
-                            });
-                        }
-                    });
-
                     actionurl = $('#mixSongs-upload-form').attr('action');
                     $.ajax({
                         url: actionurl,
                         type: 'post',
                         dataType: "JSON",
-                        data: formData,
+                        data: new FormData(this),
                         processData: false,
                         contentType: false,
 
@@ -1108,25 +1088,13 @@
                         $('.zone_type').html('');
                     }
 
-                    // Build FormData and ensure multi-select previews are sent
-                    const formData = new FormData(this);
-                    const multiFileFields = ['bass_images', 'drum_images', 'guitar_images', 'keyboard_images'];
-                    multiFileFields.forEach(field => {
-                        if (selectedFiles[field] && selectedFiles[field].length) {
-                            formData.delete(field + '[]');
-                            selectedFiles[field].forEach(file => {
-                                formData.append(field + '[]', file, file.name);
-                            });
-                        }
-                    });
-
                     actionurl = $('#mixSongs-upload-edit-form').attr('action');
 
                     $.ajax({
                         url: actionurl,
                         type: 'post',
                         dataType: "JSON",
-                        data: formData,
+                        data: new FormData(this),
                         processData: false,
                         contentType: false,
 

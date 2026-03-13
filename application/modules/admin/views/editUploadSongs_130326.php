@@ -340,7 +340,7 @@
                                             <input type="file" name="bass_images[]" id="bass_images" multiple accept="image/*,video/*" onchange="previewFiles(this, 'bassPreview')">
                                             <span class="error_msg bass_images"></span><br><br>
 
-                                            <div id="bassPreview" class="preview-container" data-keep-existing="1">
+                                            <div id="bassPreview" class="preview-container">
                                                 <?php if (!empty($song_images_grouped['bass'])): ?>
                                                     <?php foreach ($song_images_grouped['bass'] as $image): ?>
                                                         <div class="preview-item existing" data-filename="<?= $image ?>">
@@ -364,7 +364,7 @@
                                             <input type="file" name="drum_images[]" id="drum_images" multiple accept="image/*,video/*" onchange="previewFiles(this, 'drumPreview')">
                                             <span class="error_msg drum_images"></span><br><br>
 
-                                            <div id="drumPreview" class="preview-container" data-keep-existing="1">
+                                            <div id="drumPreview" class="preview-container">
                                                 <?php if (!empty($song_images_grouped['drums'])): ?>
                                                     <?php foreach ($song_images_grouped['drums'] as $image): ?>
                                                         <div class="preview-item existing" data-filename="<?= $image ?>">
@@ -390,7 +390,7 @@
                                             <input type="file" name="guitar_images[]" id="guitar_images" multiple accept="image/*,video/*" onchange="previewFiles(this, 'guitarPreview')">
                                             <span class="error_msg guitar_images"></span><br><br>
 
-                                            <div id="guitarPreview" class="preview-container" data-keep-existing="1">
+                                            <div id="guitarPreview" class="preview-container">
                                                 <?php if (!empty($song_images_grouped['guitar'])): ?>
                                                     <?php foreach ($song_images_grouped['guitar'] as $image): ?>
                                                         <div class="preview-item existing" data-filename="<?= $image ?>">
@@ -414,7 +414,7 @@
                                             <input type="file" name="keyboard_images[]" id="keyboard_images" multiple accept="image/*,video/*" onchange="previewFiles(this, 'keyboardPreview')">
                                             <span class="error_msg keyboard_images"></span><br><br>
 
-                                            <div id="keyboardPreview" class="preview-container" data-keep-existing="1">
+                                            <div id="keyboardPreview" class="preview-container">
                                                 <?php if (!empty($song_images_grouped['keyboards'])): ?>
                                                     <?php foreach ($song_images_grouped['keyboards'] as $image): ?>
                                                         <div class="preview-item existing" data-filename="<?= $image ?>">

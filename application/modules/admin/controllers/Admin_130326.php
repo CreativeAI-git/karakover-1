@@ -103,7 +103,6 @@ class Admin extends Admin_Controller
 
             $result = $this->common->deleteData('tbl_songs', array('id' => $id));
             $result = $this->common->deleteData('tbl_music_files', array('song_id' => $id));
-            $result = $this->common->deleteData('song_images', array('song_id' => $id));
             $result = $this->common->deleteData('recorded_songs', array('song_id' => $id));
             if ($result) {
                 $this->session->set_flashdata('success', 'Data deleted successfully');
@@ -2814,27 +2813,13 @@ class Admin extends Admin_Controller
                         'keyboards' => 'keyboard_images'
                     ];
 
-                    // Fetch all old images from `song_images` table (may have multiple rows)
-                    $song_images_rows = $this->db->where('song_id', $songs_id)->get('song_images')->result_array();
+                    // Fetch old images from `song_images` table
+                    $song_images = $this->db->where('song_id', $songs_id)->get('song_images')->row();
 
-                    // Initialize old_files array (merged from all rows)
-                    $old_files = [
-                        'bass' => [],
-                        'drums' => [],
-                        'guitar' => [],
-                        'keyboards' => []
-                    ];
-                    foreach ($song_images_rows as $row) {
-                        foreach ($fields as $key => $field_name) {
-                            if (!empty($row[$key])) {
-                                $old_files[$key] = array_merge($old_files[$key], explode(',', $row[$key]));
-                            }
-                        }
-                    }
-
-                    // Clean empty values and duplicates
+                    // Initialize old_files array
+                    $old_files = [];
                     foreach ($fields as $key => $field_name) {
-                        $old_files[$key] = array_values(array_unique(array_filter($old_files[$key])));
+                        $old_files[$key] = !empty($song_images->$key) ? explode(',', $song_images->$key) : [];
                     }
 
                     // Handle file removal separately for each field
@@ -2892,10 +2877,8 @@ class Admin extends Admin_Controller
                         }
                     }
 
-                    // Replace with a single consolidated row
-                    $this->db->where('song_id', $songs_id)->delete('song_images');
-                    $update_data['song_id'] = $songs_id;
-                    $this->db->insert('song_images', $update_data);
+                    // Update database
+                    $this->db->where('song_id', $songs_id)->update('song_images', $update_data);
                 }
 
                 $result1 = $this->common->updateData(

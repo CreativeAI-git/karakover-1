@@ -34,13 +34,9 @@
 						</div>
 					</div>
 
-					<div class="col-sm-offset-2">
-						<?php if (!empty($cat)) { ?>
-							<input type="hidden" name="id" value="<?php echo $cat['id']; ?>">
-							<input type="submit" name="submit" value="Update" class="btn btn-success gl_btn_bg_blue">
-						<?php } else { ?>
-							<input type="submit" name="submit" value="Add" class="btn btn-success gl_btn_bg_blue">
-						<?php } ?>
+					<div class="col-sm-offset-2"> <?php if (!empty($cat)) { ?> <input type="hidden" name="id" value="
+												<?php echo $cat['id']; ?>">
+							<input type="submit" name="submit" value="Update" class="btn btn-success gl_btn_bg_blue"> <?php } else { ?> <input type="submit" name="submit" value="Add" class="btn btn-success gl_btn_bg_blue"> <?php } ?>
 					</div>
 				</form>
 			</div>

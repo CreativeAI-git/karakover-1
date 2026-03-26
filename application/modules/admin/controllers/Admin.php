@@ -573,6 +573,18 @@ class Admin extends Admin_Controller
         $this->adminHtml('Instrument List', 'instrument-list', $data);
     }
 
+    private function generate_video_thumbnail($videoPath, $thumbPath)
+    {
+        if (!file_exists($videoPath)) {
+            return false;
+        }
+
+        $command = "ffmpeg -y -i " . escapeshellarg($videoPath) . " -ss 00:00:01 -vframes 1 -q:v 2 " . escapeshellarg($thumbPath) . " 2>&1";
+        @shell_exec($command);
+
+        return file_exists($thumbPath);
+    }
+
     // created by @Krishn on 26-03-2026
     public function mobileBannerList()
     {
@@ -847,11 +859,19 @@ class Admin extends Admin_Controller
             $this->adminHtml('Update Mobile Banner', 'add-mobile-banner', $data);
         } else {
             unset($_POST["submit"]);
+            unset($_POST["id"]);
 
             $existing = $data['banner'];
 
             if ($type === 'text') {
                 $_POST['banner'] = $this->input->post('banner_text');
+                $_POST['thumbnail_image'] = null;
+                if (!empty($existing) && !empty($existing['thumbnail_image'])) {
+                    $old_thumb = './assets/mobile_banners/' . $existing['thumbnail_image'];
+                    if (file_exists($old_thumb)) {
+                        unlink($old_thumb);
+                    }
+                }
             } else {
                 if (!empty($_FILES['banner_file']['name'])) {
                     $allowed_types = ($type === 'image')
@@ -883,6 +903,52 @@ class Admin extends Admin_Controller
                             unlink($old_file);
                         }
                     }
+
+                    if ($type === 'video') {
+                        if (!empty($_FILES['thumbnail_image']['name'])) {
+                            $thumb_config = [
+                                'upload_path' => './assets/mobile_banners/',
+                                'allowed_types' => 'jpg|jpeg|png|webp|gif',
+                                'encrypt_name' => true,
+                                'max_size' => 51200
+                            ];
+                            $this->upload->initialize($thumb_config);
+                            if (!$this->upload->do_upload('thumbnail_image')) {
+                                $this->session->set_flashdata('danger', strip_tags($this->upload->display_errors()));
+                                redirect(base_url('admin/edit_mobile_banner/' . $banner_id), 'refresh');
+                                return;
+                            }
+                            $thumbData = $this->upload->data();
+                            $_POST['thumbnail_image'] = $thumbData['file_name'];
+                            if (!empty($existing) && !empty($existing['thumbnail_image'])) {
+                                $old_thumb = './assets/mobile_banners/' . $existing['thumbnail_image'];
+                                if (file_exists($old_thumb)) {
+                                    unlink($old_thumb);
+                                }
+                            }
+                        } else if (empty($existing['thumbnail_image'])) {
+                            $videoPath = './assets/mobile_banners/' . $_POST['banner'];
+                            $thumbName = 'thumb_' . uniqid() . '.jpg';
+                            $thumbPath = './assets/mobile_banners/' . $thumbName;
+                            if ($this->generate_video_thumbnail($videoPath, $thumbPath)) {
+                                $_POST['thumbnail_image'] = $thumbName;
+                                if (!empty($existing) && !empty($existing['thumbnail_image'])) {
+                                    $old_thumb = './assets/mobile_banners/' . $existing['thumbnail_image'];
+                                    if (file_exists($old_thumb)) {
+                                        unlink($old_thumb);
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        $_POST['thumbnail_image'] = null;
+                        if (!empty($existing) && !empty($existing['thumbnail_image'])) {
+                            $old_thumb = './assets/mobile_banners/' . $existing['thumbnail_image'];
+                            if (file_exists($old_thumb)) {
+                                unlink($old_thumb);
+                            }
+                        }
+                    }
                 } else {
                     if (empty($existing) || empty($existing['banner']) || $existing['type'] !== $type) {
                         $this->session->set_flashdata('danger', 'Please select a banner file.');
@@ -890,6 +956,45 @@ class Admin extends Admin_Controller
                         return;
                     }
                     unset($_POST['banner']);
+                    if ($type !== 'video') {
+                        $_POST['thumbnail_image'] = null;
+                        if (!empty($existing) && !empty($existing['thumbnail_image'])) {
+                            $old_thumb = './assets/mobile_banners/' . $existing['thumbnail_image'];
+                            if (file_exists($old_thumb)) {
+                                unlink($old_thumb);
+                            }
+                        }
+                    } else {
+                        if (!empty($_FILES['thumbnail_image']['name'])) {
+                            $thumb_config = [
+                                'upload_path' => './assets/mobile_banners/',
+                                'allowed_types' => 'jpg|jpeg|png|webp|gif',
+                                'encrypt_name' => true,
+                                'max_size' => 51200
+                            ];
+                            $this->upload->initialize($thumb_config);
+                            if (!$this->upload->do_upload('thumbnail_image')) {
+                                $this->session->set_flashdata('danger', strip_tags($this->upload->display_errors()));
+                                redirect(base_url('admin/edit_mobile_banner/' . $banner_id), 'refresh');
+                                return;
+                            }
+                            $thumbData = $this->upload->data();
+                            $_POST['thumbnail_image'] = $thumbData['file_name'];
+                            if (!empty($existing) && !empty($existing['thumbnail_image'])) {
+                                $old_thumb = './assets/mobile_banners/' . $existing['thumbnail_image'];
+                                if (file_exists($old_thumb)) {
+                                    unlink($old_thumb);
+                                }
+                            }
+                        } else if (empty($existing['thumbnail_image']) && !empty($existing['banner'])) {
+                            $videoPath = './assets/mobile_banners/' . $existing['banner'];
+                            $thumbName = 'thumb_' . uniqid() . '.jpg';
+                            $thumbPath = './assets/mobile_banners/' . $thumbName;
+                            if ($this->generate_video_thumbnail($videoPath, $thumbPath)) {
+                                $_POST['thumbnail_image'] = $thumbName;
+                            }
+                        }
+                    }
                 }
             }
             unset($_POST["banner_text"]);
@@ -1126,6 +1231,7 @@ class Admin extends Admin_Controller
 
             if ($type === 'text') {
                 $_POST['banner'] = $this->input->post('banner_text');
+                $_POST['thumbnail_image'] = null;
             } else {
                 if (!empty($_FILES['banner_file']['name'])) {
                     $allowed_types = ($type === 'image')
@@ -1150,6 +1256,35 @@ class Admin extends Admin_Controller
 
                     $uploadData = $this->upload->data();
                     $_POST['banner'] = $uploadData['file_name'];
+
+                    if ($type === 'video') {
+                        $_POST['thumbnail_image'] = null;
+                        if (!empty($_FILES['thumbnail_image']['name'])) {
+                            $thumb_config = [
+                                'upload_path' => './assets/mobile_banners/',
+                                'allowed_types' => 'jpg|jpeg|png|webp|gif',
+                                'encrypt_name' => true,
+                                'max_size' => 51200
+                            ];
+                            $this->upload->initialize($thumb_config);
+                            if (!$this->upload->do_upload('thumbnail_image')) {
+                                $this->session->set_flashdata('danger', strip_tags($this->upload->display_errors()));
+                                redirect(base_url('admin/add_mobile_banner'), 'refresh');
+                                return;
+                            }
+                            $thumbData = $this->upload->data();
+                            $_POST['thumbnail_image'] = $thumbData['file_name'];
+                        } else {
+                            $videoPath = './assets/mobile_banners/' . $_POST['banner'];
+                            $thumbName = 'thumb_' . uniqid() . '.jpg';
+                            $thumbPath = './assets/mobile_banners/' . $thumbName;
+                            if ($this->generate_video_thumbnail($videoPath, $thumbPath)) {
+                                $_POST['thumbnail_image'] = $thumbName;
+                            }
+                        }
+                    } else {
+                        $_POST['thumbnail_image'] = null;
+                    }
                 } else {
                     $this->session->set_flashdata('danger', 'Please select a banner file.');
                     redirect(base_url('admin/add_mobile_banner'), 'refresh');

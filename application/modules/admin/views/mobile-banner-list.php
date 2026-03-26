@@ -44,7 +44,7 @@
                     <?php if (!empty($value['type']) && $value['type'] === 'image' && !empty($value['banner'])) { ?>
                       <img src="<?= base_url('/assets/mobile_banners/') . $value['banner']; ?>" width="100" height="100">
                     <?php } else if (!empty($value['type']) && $value['type'] === 'video' && !empty($value['banner'])) { ?>
-                      <video width="150" height="100" controls>
+                      <video width="150" height="100" controls <?php if (!empty($value['thumbnail_image'])) { ?>poster="<?= base_url('/assets/mobile_banners/') . $value['thumbnail_image']; ?>"<?php } ?>>
                         <source src="<?= base_url('/assets/mobile_banners/') . $value['banner']; ?>" type="video/mp4">
                       </video>
                     <?php } else if (!empty($value['banner'])) { ?>

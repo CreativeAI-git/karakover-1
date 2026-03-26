@@ -13,6 +13,9 @@
         <?php
         $selectedType = !empty($banner) && !empty($banner['type']) ? $banner['type'] : 'text';
         $bannerValue = !empty($banner) && !empty($banner['banner']) ? $banner['banner'] : '';
+        $thumbnailValue = !empty($banner) && !empty($banner['thumbnail_image']) ? $banner['thumbnail_image'] : '';
+        $hasExistingBanner = !empty($bannerValue) ? '1' : '0';
+        $existingType = !empty($banner) && !empty($banner['type']) ? $banner['type'] : '';
         ?>
         <form class="form-horizontal" method="post" action="<?php if (!empty($banner)) {
                                                               echo site_url('admin/edit_mobile_banner/' . $this->uri->segment(3));
@@ -47,7 +50,7 @@
           <div class="form-group gl_text_black" id="banner_file_group">
             <label class="col-sm-2 control-label label-input-lg">Banner File</label>
             <div class="col-sm-8" id="admin_profile">
-              <input type="file" name="banner_file" id="banner_file" class="form-control">
+              <input type="file" name="banner_file" id="banner_file" class="form-control" data-has-existing="<?= $hasExistingBanner; ?>" data-existing-type="<?= $existingType; ?>">
               <div class="mt-3">
                 <img class="img-responsive" src="<?php if ($selectedType === 'image' && !empty($bannerValue)) {
                                                     echo base_url('assets/mobile_banners/' . $bannerValue);
@@ -57,6 +60,19 @@
                                                           echo base_url('assets/mobile_banners/' . $bannerValue);
                                                         } ?>" type="video/mp4">
                 </video>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group gl_text_black" id="thumbnail_group">
+            <label class="col-sm-2 control-label label-input-lg">Thumbnail Image</label>
+            <div class="col-sm-8" id="admin_profile">
+              <input type="file" name="thumbnail_image" id="thumbnail_image" class="form-control" accept="image/*">
+              <small class="text-muted">If you don't upload a thumbnail, it will be auto-generated from the video.</small>
+              <div class="mt-3">
+                <img class="img-responsive" src="<?php if ($selectedType === 'video' && !empty($thumbnailValue)) {
+                                                    echo base_url('assets/mobile_banners/' . $thumbnailValue);
+                                                  } ?>" height="200px" width="200" id="thumbnail_preview" style="<?php echo ($selectedType === 'video' && !empty($thumbnailValue)) ? '' : 'display:none'; ?>">
               </div>
             </div>
           </div>
@@ -84,6 +100,9 @@
     var imagePreview = document.getElementById('banner_image_preview');
     var videoPreview = document.getElementById('banner_video_preview');
     var videoSource = document.getElementById('banner_video_source');
+    var thumbnailGroup = document.getElementById('thumbnail_group');
+    var thumbnailInput = document.getElementById('thumbnail_image');
+    var thumbnailPreview = document.getElementById('thumbnail_preview');
 
     function setVisibility() {
       var type = typeSelect.value;
@@ -92,15 +111,38 @@
         textGroup.style.display = 'block';
         fileGroup.style.display = 'none';
         fileInput.value = '';
+        fileInput.removeAttribute('required');
+        thumbnailGroup.style.display = 'none';
+        thumbnailInput.value = '';
+        thumbnailInput.removeAttribute('required');
       } else {
         textGroup.style.display = 'none';
         fileGroup.style.display = 'block';
       }
 
+      var hasExisting = fileInput.getAttribute('data-has-existing') === '1';
+      var existingType = fileInput.getAttribute('data-existing-type');
+      var canReuseExisting = hasExisting && existingType === type;
+
       if (type === 'image') {
         fileInput.setAttribute('accept', 'image/*');
+        if (!canReuseExisting) {
+          fileInput.setAttribute('required', 'required');
+        } else {
+          fileInput.removeAttribute('required');
+        }
+        thumbnailGroup.style.display = 'none';
+        thumbnailInput.value = '';
+        thumbnailInput.removeAttribute('required');
       } else if (type === 'video') {
         fileInput.setAttribute('accept', 'video/*');
+        if (!canReuseExisting) {
+          fileInput.setAttribute('required', 'required');
+        } else {
+          fileInput.removeAttribute('required');
+        }
+        thumbnailGroup.style.display = 'block';
+        thumbnailInput.removeAttribute('required');
       }
 
       if (type !== 'image') {
@@ -133,6 +175,13 @@
 
     typeSelect.addEventListener('change', setVisibility);
     fileInput.addEventListener('change', updatePreview);
+    thumbnailInput.addEventListener('change', function() {
+      var file = thumbnailInput.files && thumbnailInput.files[0];
+      if (!file) return;
+      var url = window.URL.createObjectURL(file);
+      thumbnailPreview.src = url;
+      thumbnailPreview.style.display = 'block';
+    });
 
     setVisibility();
   })();

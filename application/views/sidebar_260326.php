@@ -107,14 +107,6 @@
            </div>
           </li>
 
-          <!--Mobile Banners-->
-          <li class="nav-item">
-           <a class="nav-link" href="<?=base_url('admin/mobileBannerList'); ?>">
-            <i class="fas fa fa-music"></i>
-            <span>Mobile Banners</span>
-           </a>
-          </li>
-
           <!---Instrument-->
           <li class="nav-item">
            <a class="nav-link" href="<?=base_url('admin/instrumentList'); ?>" >
@@ -149,7 +141,6 @@
           
           <!--270423 mohd end-->
           
-          <!--Songs-->
           <li class="nav-item">
            <a class="nav-link" href="<?=base_url('admin/songsList'); ?>">
             <i class="fas fa fa-music"></i>
@@ -157,7 +148,6 @@
            </a>
           </li>
 
-          <!--Requested Songs-->
           <li class="nav-item">
            <a class="nav-link" href="<?=base_url('admin/requestsongList'); ?>">
             <i class="fas fa fa-music"></i>
@@ -165,7 +155,6 @@
            </a>
           </li>
           
-          <!--Terms and Services-->
           <li class="nav-item">
            <a class="nav-link" href="<?=base_url('admin/termServices'); ?>">
             <i class="fas fa-fw fa-cog"></i>
@@ -173,7 +162,7 @@
            </a>
           </li>
 
-          <!-- Privacy Policy -->
+          <!-- Nav Item - Tables -->
           <li class="nav-item">
            <a class="nav-link" href="<?=base_url('admin/privacyPolicy'); ?>">
             <i class="fas fa-fw fa-cogs"></i>

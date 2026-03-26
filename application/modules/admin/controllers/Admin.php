@@ -573,6 +573,18 @@ class Admin extends Admin_Controller
         $this->adminHtml('Instrument List', 'instrument-list', $data);
     }
 
+    // created by @Krishn on 26-03-2026
+    public function mobileBannerList()
+    {
+        $options = [
+            'sort_by' => 'id',
+            'sort_direction' => 'ASC'
+        ];
+
+        $data['banners'] = $this->common->getData('mobile_banners', "", $options);
+        $this->adminHtml('Mobile Banners', 'mobile-banner-list', $data);
+    }
+
     public function favUsersList()
     {
         $data['favuser'] = $this->common->getData('tbl_favourite_artists', array());
@@ -820,6 +832,99 @@ class Admin extends Admin_Controller
         }
     }
 
+    public function edit_mobile_banner()
+    {
+        $banner_id = $this->uri->segment(3);
+        $data['banner'] = $this->common->getData('mobile_banners', array('id' => $banner_id), array('single'));
+
+        $this->form_validation->set_rules('type', 'Type', 'required');
+        $type = $this->input->post('type');
+        if ($type === 'text') {
+            $this->form_validation->set_rules('banner_text', 'Banner', 'required');
+        }
+
+        if ($this->form_validation->run() == false) {
+            $this->adminHtml('Update Mobile Banner', 'add-mobile-banner', $data);
+        } else {
+            unset($_POST["submit"]);
+
+            $existing = $data['banner'];
+
+            if ($type === 'text') {
+                $_POST['banner'] = $this->input->post('banner_text');
+            } else {
+                if (!empty($_FILES['banner_file']['name'])) {
+                    $allowed_types = ($type === 'image')
+                        ? 'jpg|jpeg|png|webp|gif'
+                        : 'mp4|mov|avi|mkv|webm';
+
+                    $config = [
+                        'upload_path' => './assets/mobile_banners/',
+                        'allowed_types' => $allowed_types,
+                        'encrypt_name' => true,
+                        'max_size' => 51200
+                    ];
+
+                    $this->load->library('upload');
+                    $this->upload->initialize($config);
+
+                    if (!$this->upload->do_upload('banner_file')) {
+                        $this->session->set_flashdata('danger', strip_tags($this->upload->display_errors()));
+                        redirect(base_url('admin/edit_mobile_banner/' . $banner_id), 'refresh');
+                        return;
+                    }
+
+                    $uploadData = $this->upload->data();
+                    $_POST['banner'] = $uploadData['file_name'];
+
+                    if (!empty($existing) && in_array($existing['type'], array('image', 'video')) && !empty($existing['banner'])) {
+                        $old_file = './assets/mobile_banners/' . $existing['banner'];
+                        if (file_exists($old_file)) {
+                            unlink($old_file);
+                        }
+                    }
+                } else {
+                    if (empty($existing) || empty($existing['banner']) || $existing['type'] !== $type) {
+                        $this->session->set_flashdata('danger', 'Please select a banner file.');
+                        redirect(base_url('admin/edit_mobile_banner/' . $banner_id), 'refresh');
+                        return;
+                    }
+                    unset($_POST['banner']);
+                }
+            }
+            unset($_POST["banner_text"]);
+
+            $result = $this->common->updateData('mobile_banners', $_POST, array('id' => $banner_id));
+            if ($result) {
+                $this->session->set_flashdata('success', 'Data updated successfully');
+            } else {
+                $this->session->set_flashdata('danger', 'Some error occurred.');
+            }
+            redirect(base_url('admin/mobileBannerList'), 'refresh');
+        }
+    }
+
+    public function delete_mobile_banner()
+    {
+        $id = $this->uri->segment(3);
+        $data = $this->common->getData('mobile_banners', array('id' => $id), array('single'));
+        if ($data) {
+            if (in_array($data['type'], array('image', 'video')) && !empty($data['banner'])) {
+                $file = './assets/mobile_banners/' . $data['banner'];
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+            $result = $this->common->deleteData('mobile_banners', array('id' => $id));
+            if ($result) {
+                $this->session->set_flashdata('success', 'Mobile banner deleted successfully');
+            } else {
+                $this->session->set_flashdata('danger', 'Some Error occured.');
+            }
+            redirect(base_url('admin/mobileBannerList'), 'refresh');
+        }
+    }
+
     public function edit_moodtype()
     {
         $user_id = $this->uri->segment(3);
@@ -1003,6 +1108,64 @@ class Admin extends Admin_Controller
                 $this->session->set_flashdata('danger', 'Some Error occured.');
             }
             redirect(base_url('admin/genreList'), 'refresh');
+        }
+    }
+
+    public function add_mobile_banner()
+    {
+        $this->form_validation->set_rules('type', 'Type', 'required');
+        $type = $this->input->post('type');
+        if ($type === 'text') {
+            $this->form_validation->set_rules('banner_text', 'Banner', 'required');
+        }
+
+        if ($this->form_validation->run() == false) {
+            $this->adminHtml('Add Mobile Banner', 'add-mobile-banner');
+        } else {
+            unset($_POST["submit"]);
+
+            if ($type === 'text') {
+                $_POST['banner'] = $this->input->post('banner_text');
+            } else {
+                if (!empty($_FILES['banner_file']['name'])) {
+                    $allowed_types = ($type === 'image')
+                        ? 'jpg|jpeg|png|webp|gif'
+                        : 'mp4|mov|avi|mkv|webm';
+
+                    $config = [
+                        'upload_path' => './assets/mobile_banners/',
+                        'allowed_types' => $allowed_types,
+                        'encrypt_name' => true,
+                        'max_size' => 51200
+                    ];
+
+                    $this->load->library('upload');
+                    $this->upload->initialize($config);
+
+                    if (!$this->upload->do_upload('banner_file')) {
+                        $this->session->set_flashdata('danger', strip_tags($this->upload->display_errors()));
+                        redirect(base_url('admin/add_mobile_banner'), 'refresh');
+                        return;
+                    }
+
+                    $uploadData = $this->upload->data();
+                    $_POST['banner'] = $uploadData['file_name'];
+                } else {
+                    $this->session->set_flashdata('danger', 'Please select a banner file.');
+                    redirect(base_url('admin/add_mobile_banner'), 'refresh');
+                    return;
+                }
+            }
+            unset($_POST["banner_text"]);
+
+            $post = $this->common->getField('mobile_banners', $_POST);
+            $result = $this->common->insertData('mobile_banners', $post);
+            if ($result) {
+                $this->session->set_flashdata('success', 'Data added successfully');
+            } else {
+                $this->session->set_flashdata('danger', 'Some Error occured.');
+            }
+            redirect(base_url('admin/mobileBannerList'), 'refresh');
         }
     }
     public function add_songs()

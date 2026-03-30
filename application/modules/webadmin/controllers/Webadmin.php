@@ -77,28 +77,61 @@ class Webadmin extends Admin_Controller
     // }
     public function about_edit()
     {
+        $id = $_POST['id'];
 
-        if (isset($_FILES['image'])) {
-            if ($_POST['checkstatus'] !== 'multiplecheck') {
-                $image_name = fileuploadCI('image', './assets/website/about/');
-                if (isset($image_name)) {
-                    $_POST['image'] = $image_name;
+        // Get old data first
+        $oldData = $this->common->getData('web_about', ['id' => $id]);
+
+        // ================= SINGLE IMAGE =================
+        if (!empty($_FILES['image']['name']) && $_POST['checkstatus'] !== 'multiplecheck') {
+
+            $image_name = fileuploadCI('image', './assets/website/about/');
+
+            if (!empty($image_name)) {
+
+                // delete old image
+                if (!empty($oldData['image']) && file_exists('./assets/website/about/' . $oldData['image'])) {
+                    unlink('./assets/website/about/' . $oldData['image']);
                 }
-            } else {
-                $image = $this->multiple_files($_FILES['image'], './assets/website/about/', 'jpg|jpeg|png|gif');
-                if (isset($image)) {
-                    $image_names = array_column($image, 'image_name');
-                    $_POST['image'] = implode(', ', $image_names);
-                }
+
+                $_POST['image'] = $image_name;
             }
+        }
+        // ================= MULTIPLE IMAGE =================
+        else if (!empty($_FILES['image']['name'][0]) && $_POST['checkstatus'] == 'multiplecheck') {
+
+            $image = $this->multiple_files($_FILES['image'], './assets/website/about/', 'jpg|jpeg|png|gif');
+
+            if (!empty($image)) {
+
+                $image_names = array_column($image, 'image_name');
+
+                // delete old images
+                if (!empty($oldData['image'])) {
+                    $oldImages = explode(',', $oldData['image']);
+                    foreach ($oldImages as $oldImg) {
+                        $oldImg = trim($oldImg);
+                        if (file_exists('./assets/website/about/' . $oldImg)) {
+                            unlink('./assets/website/about/' . $oldImg);
+                        }
+                    }
+                }
+
+                $_POST['image'] = implode(',', $image_names);
+            }
+        } else {
+            // IMPORTANT: if no new image → keep old image
+            unset($_POST['image']);
         }
         unset($_POST["checkstatus"]);
         unset($_POST["submit"]);
-        $result = $this->common->updateData('web_about', $_POST, array('id' => $_POST["id"]));
+
+        $result = $this->common->updateData('web_about', $_POST, ['id' => $id]);
+
         if ($result) {
-            $a = $this->session->set_flashdata('success', 'Data Update successfully');
+            $this->session->set_flashdata('success', 'Data Updated successfully');
         } else {
-            $this->session->set_flashdata('danger', 'Some Error occured.');
+            $this->session->set_flashdata('danger', 'Some Error occurred.');
         }
         redirect(base_url('webadmin/aboutpage'), 'refresh');
     }

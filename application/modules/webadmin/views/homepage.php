@@ -1,4 +1,6 @@
-<script src="https://cdn.ckeditor.com/4.19.1/standard-all/ckeditor.js"></script>
+<!-- <script src="https://cdn.ckeditor.com/4.19.1/standard-all/ckeditor.js"></script> -->
+ <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/43.0.0/ckeditor5.css">
+ <script src="https://cdn.ckeditor.com/ckeditor5/43.0.0/ckeditor5.umd.js"></script>
 <div class="container-fluid">
 <div class="height20 clear"></div>
 <div class="col-sm-12"> 
@@ -21,7 +23,7 @@
       <fieldset>
         <h1 class="h3 mb-3 page-title"><?= $title; ?></h1>
         <div class="form-group" id="main">
-          <textarea class="form-control ckeditor" rows="20" name="details" required><?php echo $home[0]['details']; ?></textarea>
+          <textarea class="form-control ckeditor" id="homepage_details" rows="20" name="details" required><?php echo $home[0]['details']; ?></textarea>
           <?php echo form_error('details', '<span class="error_msg">', '</span>'); ?>
         </div>
         <div class="form-group gl_text_black">
@@ -54,3 +56,116 @@
 </div>
 </div>
 </div>
+<script>
+    const {
+        ClassicEditor,
+        Essentials,
+        Bold,
+        Italic,
+        Underline,
+        Font,
+        Paragraph,
+        List,
+        Link,
+        Table,
+        TableToolbar,
+        Heading,
+        Alignment
+    } = CKEDITOR;
+
+    ClassicEditor.create(document.querySelector('#homepage_details'), {
+        plugins: [
+            Essentials,
+            Paragraph,
+            Heading,
+            Bold,
+            Italic,
+            Underline,
+            Font,
+            List,
+            Link,
+            Alignment,
+
+            // Table
+            Table,
+            TableToolbar
+        ],
+
+        toolbar: [
+            'heading',
+            '|',
+            'undo', 'redo',
+            '|',
+            'bold', 'italic', 'underline',
+            '|',
+            'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor',
+            '|',
+            'alignment:left',
+            'alignment:center',
+            'alignment:right',
+            'alignment:justify',
+            '|',
+            'link',
+            'insertTable',
+            '|',
+            'bulletedList', 'numberedList'
+        ],
+
+        heading: {
+            options: [{
+                    model: 'paragraph',
+                    title: 'Normal text',
+                    class: 'ck-heading_paragraph'
+                },
+                {
+                    model: 'heading1',
+                    view: 'h1',
+                    title: 'Title',
+                    class: 'ck-heading_heading1'
+                },
+                {
+                    model: 'heading2',
+                    view: 'h2',
+                    title: 'Subtitle',
+                    class: 'ck-heading_heading2'
+                },
+                {
+                    model: 'heading3',
+                    view: 'h3',
+                    title: 'Heading 1',
+                    class: 'ck-heading_heading3'
+                },
+                {
+                    model: 'heading4',
+                    view: 'h4',
+                    title: 'Heading 2',
+                    class: 'ck-heading_heading4'
+                },
+                {
+                    model: 'heading5',
+                    view: 'h5',
+                    title: 'Heading 3',
+                    class: 'ck-heading_heading5'
+                },
+                {
+                    model: 'heading6',
+                    view: 'h6',
+                    title: 'Heading 4',
+                    class: 'ck-heading_heading6'
+                }
+            ]
+        },
+
+        fontSize: {
+            options: [10, 12, 14, 'default', 18, 20, 24, 28, 32, 36]
+        },
+
+        table: {
+            contentToolbar: [
+                'tableColumn',
+                'tableRow',
+                'mergeTableCells'
+            ]
+        }
+    }).catch(console.error);
+</script>

@@ -88,10 +88,10 @@
   <?php if ($this->uri->segment(1) == '') { ?>
     <section class="ct_banner_bg" style="background-image: url(<?php echo  base_url('/assets/website/bgimage/' . $bgimage[0]['image']); ?>);">
       <div class="container">
-        <div class="row">
+        <div class="row align-items-center">
           <div class="col-md-6 animate__animated  animate__fadeInLeft animate__delay-1s">
             <div class="ct_banner_cnt ">
-              <p class="ct_font_70 text-white"> <?php echo $home[0]['details']; ?></p>
+              <div class="ct_font_70 text-white ct_banner_overflow_h"> <?php echo $home[0]['details']; ?></div>
               <div class="ct_app_link_btn">
                 <a href="#">
                   <img src="<?php echo site_url('frontendassets/img/app-store.svg'); ?>">

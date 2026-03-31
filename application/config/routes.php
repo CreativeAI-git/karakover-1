@@ -17,3 +17,4 @@ $route['About'] = 'home/about/';
 $route['Instruments'] = 'home/instruments';
 $route['Tutorials'] = 'home/tutorials';
 $route['Chat_Room'] = 'home/chatroom';
+$route['delete-account'] = 'home/delete_account';

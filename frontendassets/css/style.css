@@ -857,6 +857,23 @@ h6.ct_head_h6 {
   font-family: 'Heebo', sans-serif;
 }
 
+.social-links li{
+  margin: 0 !important;
+  background-color: #df1c58;
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.ct_footer_links h5 {
+  font-size: 20px;
+  color: #df1c62;
+    margin-top: 18px;
+
+}
 .ct_address_cnt h6 {
   color: #df1c62;
 }
@@ -1868,7 +1885,39 @@ li.repaly .time {
   background: #555;
 }
 
-/* .ct_banner_overflow_h */
+
+
+.ct_about_cnt,
+.ct_how_works_cnt {
+  max-height: 650px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+
+.ct_about_cnt::-webkit-scrollbar,
+.ct_how_works_cnt::-webkit-scrollbar {
+  width: 1px;
+}
+
+/* Track */
+.ct_about_cnt::-webkit-scrollbar-track,
+.ct_how_works_cnt::-webkit-scrollbar-track {
+  background: #111;
+}
+
+/* Handle */
+.ct_about_cnt::-webkit-scrollbar-thumb,
+.ct_how_works_cnt::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+.ct_about_cnt::-webkit-scrollbar-thumb:hover,
+.ct_how_works_cnt::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 @media screen and (max-width:767px) {
   h1.ct_font_70 {
     font-size: 40px;

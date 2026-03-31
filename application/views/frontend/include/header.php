@@ -40,6 +40,7 @@
                 <div class="nav-mobile"><a id="navbar-toggle" href="#!"><span></span></a></div>
                 <?php
                 $segment = $this->uri->segment(1);
+                $page_title = str_replace('_', ' ', $segment);
                 ?>
 
                 <ul class="nav-list">
@@ -121,7 +122,7 @@
         <div class="row">
           <div class="col-md-12">
             <div class="ct_innter_title">
-              <h2><?php echo $this->uri->segment(1); ?></h2>
+              <h2><?php echo $page_title; ?></h2>
               <ul class="ps-0mb-0">
                 <li>
                   <a href="<?php echo site_url('/'); ?>">Home</a>
@@ -130,7 +131,7 @@
                   /
                 </li>
                 <li>
-                  <?php echo $this->uri->segment(1); ?>
+                  <?php echo $page_title; ?>
                 </li>
               </ul>
             </div>

@@ -80,18 +80,48 @@ class Webadmin extends Admin_Controller
         $id = $_POST['id'];
 
         // Get old data first
-        $oldData = $this->common->getData('web_about', ['id' => $id]);
+        $oldData = $this->common->getData('web_about', ['id' => $id], ['single']);
+        $oldImages = [];
+        if (!empty($oldData['image'])) {
+            $oldImages = array_values(array_filter(array_map('trim', explode(',', $oldData['image']))));
+        }
+
+        // ================= REMOVE SELECTED IMAGES =================
+        if (!empty($_POST['removed_images']) && is_array($_POST['removed_images'])) {
+            $removeList = array_values(array_filter(array_map('trim', $_POST['removed_images'])));
+            if (!empty($removeList)) {
+                foreach ($removeList as $removeImg) {
+                    $path = './assets/website/about/' . $removeImg;
+                    if (file_exists($path)) {
+                        unlink($path);
+                    }
+                }
+                $oldImages = array_values(array_diff($oldImages, $removeList));
+            }
+        }
 
         // ================= SINGLE IMAGE =================
         if (!empty($_FILES['image']['name']) && $_POST['checkstatus'] !== 'multiplecheck') {
+            if (is_array($_FILES['image']['name'])) {
+                $uploadNames = array_filter($_FILES['image']['name']);
+                if (count($uploadNames) > 1) {
+                    $this->session->set_flashdata('danger', 'Only 1 image is allowed for the secondary section.');
+                    redirect(base_url('webadmin/aboutpage'), 'refresh');
+                    return;
+                }
+            }
 
             $image_name = fileuploadCI('image', './assets/website/about/');
 
             if (!empty($image_name)) {
 
                 // delete old image
-                if (!empty($oldData['image']) && file_exists('./assets/website/about/' . $oldData['image'])) {
-                    unlink('./assets/website/about/' . $oldData['image']);
+                if (!empty($oldImages)) {
+                    foreach ($oldImages as $oldImg) {
+                        if (file_exists('./assets/website/about/' . $oldImg)) {
+                            unlink('./assets/website/about/' . $oldImg);
+                        }
+                    }
                 }
 
                 $_POST['image'] = $image_name;
@@ -99,30 +129,31 @@ class Webadmin extends Admin_Controller
         }
         // ================= MULTIPLE IMAGE =================
         else if (!empty($_FILES['image']['name'][0]) && $_POST['checkstatus'] == 'multiplecheck') {
+            $uploadNames = array_filter($_FILES['image']['name']);
+            $remaining = count($oldImages);
+            if (count($uploadNames) + $remaining > 3) {
+                $this->session->set_flashdata('danger', 'Only 3 images are allowed for the primary section.');
+                redirect(base_url('webadmin/aboutpage'), 'refresh');
+                return;
+            }
 
             $image = $this->multiple_files($_FILES['image'], './assets/website/about/', 'jpg|jpeg|png|gif');
 
             if (!empty($image)) {
 
                 $image_names = array_column($image, 'image_name');
-
-                // delete old images
-                if (!empty($oldData['image'])) {
-                    $oldImages = explode(',', $oldData['image']);
-                    foreach ($oldImages as $oldImg) {
-                        $oldImg = trim($oldImg);
-                        if (file_exists('./assets/website/about/' . $oldImg)) {
-                            unlink('./assets/website/about/' . $oldImg);
-                        }
-                    }
-                }
-
-                $_POST['image'] = implode(',', $image_names);
+                $mergedImages = array_merge($oldImages, $image_names);
+                $_POST['image'] = implode(', ', $mergedImages);
             }
         } else {
             // IMPORTANT: if no new image → keep old image
-            unset($_POST['image']);
+            if (!empty($oldImages)) {
+                $_POST['image'] = implode(', ', $oldImages);
+            } else {
+                $_POST['image'] = '';
+            }
         }
+        unset($_POST['removed_images']);
         unset($_POST["checkstatus"]);
         unset($_POST["submit"]);
 

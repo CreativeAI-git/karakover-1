@@ -44,7 +44,7 @@
             $siteSubUrlUri = $this->uri->segment('3');
           ?>
           <!-- Nav Item - Dashboard -->
-          <li class="nav-item active">
+          <li class="nav-item <?php echo ($siteUrlUri == 'dashboard') ? 'active' : ''; ?>">
            <a class="nav-link" href="<?=base_url('admin/dashboard'); ?>" >
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span>
@@ -55,21 +55,21 @@
           <!-- Nav Item - Pages Collapse Menu -->
           
           <!-- Web start -->
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($siteUrlUri == 'homepage') || ($siteUrlUri == 'aboutpage') || ($siteUrlUri == 'instrumentpage') || ($siteUrlUri == 'tutorialspage') || ($siteUrlUri == 'ourteampage')  || ($siteUrlUri == 'footerdetails') || ($siteUrlUri == 'bg_image_change') ? 'active' : ''; ?>">
            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseWeb" aria-expanded="true" aria-controls="collapseTwo">
-            <i class="fas fa-fw fa-user"></i>
+            <i class="fas fa-fw fa-globe"></i>
             <span>Web Pages</span>
            </a>
            <div id="collapseWeb" class="collapse  
-				  	<?php echo ($siteUrlUri == 'homepage') || ($siteUrlUri == 'aboutpage') || ($siteUrlUri == 'instrumentpage') || ($siteUrlUri == 'tutorialspage') || ($siteUrlUri == 'ourteampage')  || ($siteUrlUri == 'footerdetails') ? 'show' : ''; ?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+				  	<?php echo ($siteUrlUri == 'homepage') || ($siteUrlUri == 'aboutpage') || ($siteUrlUri == 'instrumentpage') || ($siteUrlUri == 'tutorialspage') || ($siteUrlUri == 'ourteampage')  || ($siteUrlUri == 'footerdetails') || ($siteUrlUri == 'bg_image_change') ? 'show' : ''; ?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white menu py-2 collapse-inner rounded">
-             <a class="collapse-item  <?php echo ($siteUrlUri == 'homepage')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/homepage/'); ?>"> Home Page </a>
-             <a class="collapse-item  <?php echo ($siteUrlUri == 'aboutpage')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/aboutpage/'); ?>"> About Page </a>
-             <a class="collapse-item  <?php echo ($siteUrlUri == 'ourteampage')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/ourteampage/'); ?>"> OurTeam Page </a>
-             <a class="collapse-item  <?php echo ($siteUrlUri == 'instrumentpage')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/instrumentpage/'); ?>"> Instrument Page </a>
-             <a class="collapse-item  <?php echo ($siteUrlUri == 'tutorialspage')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/tutorialspage/'); ?>"> Tutorials Page </a>
-             <a class="collapse-item  <?php echo ($siteUrlUri == 'footerdetails')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/footerdetails/'); ?>"> Footer Details Page </a>
-             <a class="collapse-item  <?php echo ($siteUrlUri == 'bg_image_change')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/bg_image_change/'); ?>"> Background Image Change  </a>
+             <a class="collapse-item  <?php echo ($siteUrlUri == 'homepage')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/homepage/'); ?>"><i class="fas fa-home mr-2"></i> Home Page </a>
+             <a class="collapse-item  <?php echo ($siteUrlUri == 'aboutpage')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/aboutpage/'); ?>"><i class="fas fa-info-circle mr-2"></i> About Page </a>
+             <a class="collapse-item  <?php echo ($siteUrlUri == 'ourteampage')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/ourteampage/'); ?>"><i class="fas fa-users mr-2"></i> OurTeam Page </a>
+             <a class="collapse-item  <?php echo ($siteUrlUri == 'instrumentpage')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/instrumentpage/'); ?>"><i class="fas fa-guitar mr-2"></i> Instrument Page </a>
+             <a class="collapse-item  <?php echo ($siteUrlUri == 'tutorialspage')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/tutorialspage/'); ?>"><i class="fas fa-chalkboard-teacher mr-2"></i> Tutorials Page </a>
+             <a class="collapse-item  <?php echo ($siteUrlUri == 'footerdetails')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/footerdetails/'); ?>"><i class="fas fa-file-alt mr-2"></i> Footer Details Page </a>
+             <a class="collapse-item  <?php echo ($siteUrlUri == 'bg_image_change')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/bg_image_change/'); ?>"><i class="fas fa-image mr-2"></i> Background Image Change  </a>
             </div>
            </div>
           </li>
@@ -77,30 +77,30 @@
 
 
 
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($siteUrlUri == 'adminprofile') || ($siteUrlUri == 'admineditprofile') ? 'active' : ''; ?>">
            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAdmin" aria-expanded="true" aria-controls="collapseTwo">
-            <i class="fas fa-fw fa-user"></i>
+            <i class="fas fa-fw fa-user-shield"></i>
             <span>Admin</span>
            </a>
            <div id="collapseAdmin" class="collapse  
 				  	<?php echo ($siteUrlUri == 'adminprofile') || ($siteUrlUri == 'admineditprofile') ? 'show' : ''; ?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white menu py-2 collapse-inner rounded">
              <a class="collapse-item" href="
-							<?php echo base_url('admin/adminprofile/') . $admin_id; ?>"> Admin Profile </a>
+							<?php echo base_url('admin/adminprofile/') . $admin_id; ?>"><i class="fas fa-id-badge mr-2"></i> Admin Profile </a>
             </div>
            </div>
           </li>
 
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($siteUrlUri == 'userList') || ($siteUrlUri == 'artistList') || ($siteUrlUri == 'profile') || ($siteUrlUri == 'edit_user') || ($siteUrlUri == 'edit_artist') ? 'active' : ''; ?>">
            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-            <i class="fa fa-users teal-color "></i> <span>Users</span> </a>
+            <i class="fas fa-users teal-color "></i> <span>Users</span> </a>
             
              <div id="collapseTwo" class="collapse<?php echo ($siteUrlUri == 'userList') || ($siteUrlUri == 'artistList') || ($siteUrlUri == 'profile') || ($siteUrlUri == 'edit_user') || ($siteUrlUri == 'edit_artist') ? 'show' : ''; ?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar" >
 
             <div class="bg-white menu py-2 collapse-inner rounded ct_inner_drop">
              
-              <a class="collapse-item" data-name='User_List' href="<?=base_url('admin/userList'); ?>"> User List </a>
-              <a class="collapse-item" data-name='Artist_List' href="<?=base_url('admin/artistList'); ?>"> Artist List </a>
+              <a class="collapse-item" data-name='User_List' href="<?=base_url('admin/userList'); ?>"><i class="fas fa-user mr-2"></i> User List </a>
+              <a class="collapse-item" data-name='Artist_List' href="<?=base_url('admin/artistList'); ?>"><i class="fas fa-microphone-alt mr-2"></i> Artist List </a>
 
             </div>
 
@@ -108,25 +108,25 @@
           </li>
 
           <!--Mobile Banners-->
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($siteUrlUri == 'mobileBannerList') ? 'active' : ''; ?>">
            <a class="nav-link" href="<?=base_url('admin/mobileBannerList'); ?>">
-            <i class="fas fa fa-music"></i>
+            <i class="fas fa-images"></i>
             <span>Mobile Banners</span>
            </a>
           </li>
 
           <!---Instrument-->
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($siteUrlUri == 'instrumentList') ? 'active' : ''; ?>">
            <a class="nav-link" href="<?=base_url('admin/instrumentList'); ?>" >
-            <i class="fas fa-fw fa-cog"></i>
+            <i class="fas fa-guitar"></i>
              <span> Instrument List </span>
            </a>
           </li>
 
           <!---Genre-->
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($siteUrlUri == 'genreList') ? 'active' : ''; ?>">
            <a class="nav-link" href="<?=base_url('admin/genreList'); ?>" >
-            <i class="fas fa-fw fa-cog"></i>
+            <i class="fas fa-tags"></i>
             <span>Category List</span>
            </a>
           </li>
@@ -150,7 +150,7 @@
           <!--270423 mohd end-->
           
           <!--Songs-->
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($siteUrlUri == 'songsList') ? 'active' : ''; ?>">
            <a class="nav-link" href="<?=base_url('admin/songsList'); ?>">
             <i class="fas fa fa-music"></i>
             <span>Song List</span>
@@ -158,25 +158,25 @@
           </li>
 
           <!--Requested Songs-->
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($siteUrlUri == 'requestsongList') ? 'active' : ''; ?>">
            <a class="nav-link" href="<?=base_url('admin/requestsongList'); ?>">
-            <i class="fas fa fa-music"></i>
+            <i class="fas fa-headphones"></i>
             <span>Request Song List</span>
            </a>
           </li>
           
           <!--Terms and Services-->
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($siteUrlUri == 'termServices') ? 'active' : ''; ?>">
            <a class="nav-link" href="<?=base_url('admin/termServices'); ?>">
-            <i class="fas fa-fw fa-cog"></i>
+            <i class="fas fa-file-contract"></i>
             <span>Terms and Services</span>
            </a>
           </li>
 
           <!-- Privacy Policy -->
-          <li class="nav-item">
+          <li class="nav-item <?php echo ($siteUrlUri == 'privacyPolicy') ? 'active' : ''; ?>">
            <a class="nav-link" href="<?=base_url('admin/privacyPolicy'); ?>">
-            <i class="fas fa-fw fa-cogs"></i>
+            <i class="fas fa-shield-alt"></i>
             <span>Privacy Policy</span>
            </a>
           </li>

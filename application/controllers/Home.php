@@ -12,6 +12,7 @@ class Home extends CI_Controller
 		$data['bgimage'] = $this->common->getData('web_bgimage', array());
 		$data['about'] = $this->common->getData('web_about', array(), array());
 		$data['instrument'] = $this->common->getData('web_instrument', array());
+		$data['home_page_banners'] = $this->common->getData('home_page_banners', array(), array('sort_by' => 'id', 'sort_direction' => 'ASC'));
 		$data['footer'] = $this->common->getData('web_footer', array(), array());
 		$this->load->view('frontend/include/index', $data);
 	}
@@ -42,6 +43,26 @@ class Home extends CI_Controller
 		$data['title'] = 'Karakover';
 		$data['page'] = 'frontend/tutorials';
 		$data['tutorial'] = $this->common->getData('web_tutorial', array());
+		$data['bgimage'] = $this->common->getData('web_bgimage', array());
+		$data['footer'] = $this->common->getData('web_footer', array(), array());
+		$this->load->view('frontend/include/index', $data);
+	}
+
+	public function terms()
+	{
+		$data['title'] = 'Karakover';
+		$data['page'] = 'frontend/terms';
+		$data['terms'] = $this->common->getData('tbl_terms_and_condition', array('id' => '1'), array('single'));
+		$data['bgimage'] = $this->common->getData('web_bgimage', array());
+		$data['footer'] = $this->common->getData('web_footer', array(), array());
+		$this->load->view('frontend/include/index', $data);
+	}
+
+	public function privacy()
+	{
+		$data['title'] = 'Karakover';
+		$data['page'] = 'frontend/privacy';
+		$data['privacy'] = $this->common->getData('tbl_terms_and_condition', array('id' => '2'), array('single'));
 		$data['bgimage'] = $this->common->getData('web_bgimage', array());
 		$data['footer'] = $this->common->getData('web_footer', array(), array());
 		$this->load->view('frontend/include/index', $data);

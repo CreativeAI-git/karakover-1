@@ -55,18 +55,19 @@
           <!-- Nav Item - Pages Collapse Menu -->
           
           <!-- Web start -->
-          <li class="nav-item <?php echo ($siteUrlUri == 'homepage') || ($siteUrlUri == 'aboutpage') || ($siteUrlUri == 'instrumentpage') || ($siteUrlUri == 'tutorialspage') || ($siteUrlUri == 'ourteampage')  || ($siteUrlUri == 'footerdetails') || ($siteUrlUri == 'bg_image_change') ? 'active' : ''; ?>">
+          <li class="nav-item <?php echo ($siteUrlUri == 'homepage') || ($siteUrlUri == 'aboutpage') || ($siteUrlUri == 'instrumentpage') || ($siteUrlUri == 'tutorialspage') || ($siteUrlUri == 'ourteampage') || ($siteUrlUri == 'ourteam_add') || ($siteUrlUri == 'ourteam_edit') || ($siteUrlUri == 'footerdetails') || ($siteUrlUri == 'bg_image_change') ? 'active' : ''; ?>">
            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseWeb" aria-expanded="true" aria-controls="collapseTwo">
             <i class="fas fa-fw fa-globe"></i>
             <span>Web Pages</span>
            </a>
            <div id="collapseWeb" class="collapse  
-				  	<?php echo ($siteUrlUri == 'homepage') || ($siteUrlUri == 'aboutpage') || ($siteUrlUri == 'instrumentpage') || ($siteUrlUri == 'tutorialspage') || ($siteUrlUri == 'ourteampage')  || ($siteUrlUri == 'footerdetails') || ($siteUrlUri == 'bg_image_change') ? 'show' : ''; ?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+				  	<?php echo ($siteUrlUri == 'homepage') || ($siteUrlUri == 'homepagebanner') || ($siteUrlUri == 'add_homepage_banner') || ($siteUrlUri == 'edit_homepage_banner') || ($siteUrlUri == 'aboutpage') || ($siteUrlUri == 'instrumentpage') || ($siteUrlUri == 'instrument_add') || ($siteUrlUri == 'instrument_edit') || ($siteUrlUri == 'tutorialspage') || ($siteUrlUri == 'ourteampage') || ($siteUrlUri == 'ourteam_add') || ($siteUrlUri == 'ourteam_edit') || ($siteUrlUri == 'footerdetails') || ($siteUrlUri == 'bg_image_change') ? 'show' : ''; ?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white menu py-2 collapse-inner rounded">
              <a class="collapse-item  <?php echo ($siteUrlUri == 'homepage')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/homepage/'); ?>"><i class="fas fa-home mr-2"></i> Home Page </a>
+             <a class="collapse-item  <?php echo ($siteUrlUri == 'homepagebanner') || ($siteUrlUri == 'add_homepage_banner') || ($siteUrlUri == 'edit_homepage_banner')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/homepagebanner/'); ?>"><i class="fas fa-images mr-2"></i> Home Page Banner </a>
              <a class="collapse-item  <?php echo ($siteUrlUri == 'aboutpage')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/aboutpage/'); ?>"><i class="fas fa-info-circle mr-2"></i> About Page </a>
-             <a class="collapse-item  <?php echo ($siteUrlUri == 'ourteampage')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/ourteampage/'); ?>"><i class="fas fa-users mr-2"></i> OurTeam Page </a>
-             <a class="collapse-item  <?php echo ($siteUrlUri == 'instrumentpage')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/instrumentpage/'); ?>"><i class="fas fa-guitar mr-2"></i> Instrument Page </a>
+             <a class="collapse-item  <?php echo ($siteUrlUri == 'ourteampage') || ($siteUrlUri == 'ourteam_add') || ($siteUrlUri == 'ourteam_edit')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/ourteampage/'); ?>"><i class="fas fa-users mr-2"></i> OurTeam Page </a>
+             <a class="collapse-item  <?php echo ($siteUrlUri == 'instrumentpage') || ($siteUrlUri == 'instrument_add') || ($siteUrlUri == 'instrument_edit')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/instrumentpage/'); ?>"><i class="fas fa-guitar mr-2"></i> Instrument Page </a>
              <a class="collapse-item  <?php echo ($siteUrlUri == 'tutorialspage')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/tutorialspage/'); ?>"><i class="fas fa-chalkboard-teacher mr-2"></i> Tutorials Page </a>
              <a class="collapse-item  <?php echo ($siteUrlUri == 'footerdetails')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/footerdetails/'); ?>"><i class="fas fa-file-alt mr-2"></i> Footer Details Page </a>
              <a class="collapse-item  <?php echo ($siteUrlUri == 'bg_image_change')? 'active' : ''; ?>" href="<?php echo base_url('webadmin/bg_image_change/'); ?>"><i class="fas fa-image mr-2"></i> Background Image Change  </a>

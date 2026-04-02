@@ -5,7 +5,7 @@
   }
 </style>
 
-<section class="ct_sec_padd ct_over_flow_hidden">
+<!-- <section class="ct_sec_padd ct_over_flow_hidden">
   <div class="container">
     <div class="row align-items-center">
       <?php if(!empty($about)) { 
@@ -44,7 +44,7 @@
 
     </div>
   </div>
-</section>
+</section> -->
 
 
 <!-- ================= MUSIC CLASSES ================= -->
@@ -97,31 +97,39 @@
 
         <div class="owl-carousel owl-theme ct_app_screen_shot">
 
-          <?php for($i=0; $i<6; $i++) { ?>
-          <div class="item">
-            <div class="ct_song_card">
+          <?php if (!empty($home_page_banners)) {
+            foreach ($home_page_banners as $banner) { ?>
+              <div class="item">
+                <div class="ct_song_card">
 
-              <img src="<?php echo site_url('frontendassets/img/music_thumb_1.png'); ?>" alt="img">
+                  <?php if (!empty($banner['type']) && $banner['type'] === 'image' && !empty($banner['banner'])) { ?>
+                    <img src="<?php echo base_url('assets/home_page_banners/' . $banner['banner']); ?>" alt="banner">
+                    <div class="ct_overlay_song_filter">
+                      <p>Image Banner</p>
+                    </div>
+                  <?php } else if (!empty($banner['type']) && $banner['type'] === 'video' && !empty($banner['banner'])) { ?>
+                    <video class="ct_banner_video" width="100%" height="100%" style="object-fit:cover;" preload="metadata" <?php if (!empty($banner['thumbnail_image'])) { ?>poster="<?php echo base_url('assets/home_page_banners/' . $banner['thumbnail_image']); ?>"<?php } ?>>
+                      <source src="<?php echo base_url('assets/home_page_banners/' . $banner['banner']); ?>" type="video/mp4">
+                    </video>
+                    <button type="button" class="ct_video_play" aria-label="Play video">
+                      <i class="fa-solid fa-play"></i>
+                    </button>
+                    <button type="button" class="ct_video_pause ct_hide_play" aria-label="Pause video">
+                      <i class="fa-solid fa-pause"></i>
+                    </button>
+                    <div class="ct_overlay_song_filter">
+                      <p>Video Banner</p>
+                    </div>
+                  <?php } else { ?>
+                    <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; text-align:center; padding:20px; background:#111; color:#fff;">
+                      <?php echo !empty($banner['banner']) ? $banner['banner'] : 'Home Page Banner'; ?>
+                    </div>
+                  <?php } ?>
 
-              <div class="ct_overlay_song_filter">
-                <p>Let Me Love You</p>
-
-                <div class="ct_filter_item">
-                  <ul>
-                    <li>
-                      <img src="<?php echo site_url('frontendassets/img/play.png'); ?>" alt="play">
-                    </li>
-                    <li>
-                      <img src="<?php echo site_url('frontendassets/img/mix_icon.png'); ?>" alt="mix">
-                    </li>
-                  </ul>
                 </div>
-
               </div>
-
-            </div>
-          </div>
-          <?php } ?>
+          <?php }
+          } ?>
 
         </div>
 

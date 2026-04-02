@@ -30,18 +30,30 @@
       <div class="col-md-2 mb-4">
         <div class="ct_footer_links">
           <h4>Sitemap</h4>
+          <?php
+            $siteUrlUri = $this->uri->segment('2');
+            if (empty($siteUrlUri)) {
+              $siteUrlUri = $this->uri->segment('1');
+            }
+          ?>
           <ul>
             <li>
-              <a href="<?php echo site_url('/'); ?>"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Home </a>
+              <a href="<?php echo site_url('/'); ?>" class="<?php echo empty($siteUrlUri) ? 'active' : ''; ?>"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Home </a>
             </li>
             <li>
-              <a href="<?php echo site_url('About'); ?>"><i class="fa fa-angle-double-left" aria-hidden="true"></i> About </a>
+              <a href="<?php echo site_url('About'); ?>" class="<?php echo ($siteUrlUri == 'About') ? 'active' : ''; ?>"><i class="fa fa-angle-double-left" aria-hidden="true"></i> About </a>
             </li>
             <li>
-              <a href="<?php echo site_url('Instruments'); ?>"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Instruments </a>
+              <a href="<?php echo site_url('Instruments'); ?>" class="<?php echo ($siteUrlUri == 'Instruments') ? 'active' : ''; ?>"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Instruments </a>
             </li>
             <li>
-              <a href="<?php echo site_url('Tutorials'); ?>"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Tutorials </a>
+              <a href="<?php echo site_url('Tutorials'); ?>" class="<?php echo ($siteUrlUri == 'Tutorials') ? 'active' : ''; ?>"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Tutorials </a>
+            </li>
+            <li>
+              <a href="<?php echo site_url('Terms'); ?>" class="<?php echo ($siteUrlUri == 'Terms') ? 'active' : ''; ?>"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Terms & Conditions </a>
+            </li>
+            <li>
+              <a href="<?php echo site_url('Privacy'); ?>" class="<?php echo ($siteUrlUri == 'Privacy') ? 'active' : ''; ?>"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Privacy Policy </a>
             </li>
             <!-- <li>
               <a href="<?php //echo site_url('Chat_Room'); 

@@ -70,7 +70,20 @@
 
 
 
-          $('.ct_app_screen_shot').owlCarousel({
+          var owl = $('.ct_app_screen_shot');
+
+          function resetVideos() {
+            owl.find('video').each(function(){
+              try {
+                this.pause();
+                this.currentTime = 0;
+              } catch (e) {}
+            });
+            owl.find('.ct_video_play').removeClass('ct_hide_play');
+            owl.find('.ct_video_pause').addClass('ct_hide_play');
+          }
+
+          owl.owlCarousel({
             loop:true,
             margin:10,
             nav:false,
@@ -82,13 +95,57 @@
                     items:1
                 },
                 600:{
-                    items:2
+                    items:1
                 },
                 1000:{
-                    items:4
+                    items:1
                 }
             }
-        })
+        });
+
+        owl.on('changed.owl.carousel', function() {
+          resetVideos();
+          owl.trigger('play.owl.autoplay',[2000]);
+        });
+
+        $(document).on('click', '.ct_video_play', function(){
+          var $btn = $(this);
+          var $card = $btn.closest('.ct_song_card');
+          var video = $card.find('video').get(0);
+          var $pauseBtn = $card.find('.ct_video_pause');
+          if (!video) return;
+
+          resetVideos();
+          $btn.addClass('ct_hide_play');
+          $pauseBtn.removeClass('ct_hide_play');
+          owl.trigger('stop.owl.autoplay');
+          video.play();
+
+          video.onended = function(){
+            $btn.removeClass('ct_hide_play');
+            $pauseBtn.addClass('ct_hide_play');
+            owl.trigger('play.owl.autoplay',[2000]);
+          };
+
+          video.onpause = function(){
+            if (video.currentTime === 0 || video.ended) return;
+            $btn.removeClass('ct_hide_play');
+            $pauseBtn.addClass('ct_hide_play');
+            owl.trigger('play.owl.autoplay',[2000]);
+          };
+        });
+
+        $(document).on('click', '.ct_video_pause', function(){
+          var $btn = $(this);
+          var $card = $btn.closest('.ct_song_card');
+          var video = $card.find('video').get(0);
+          var $playBtn = $card.find('.ct_video_play');
+          if (!video) return;
+          video.pause();
+          $btn.addClass('ct_hide_play');
+          $playBtn.removeClass('ct_hide_play');
+          owl.trigger('play.owl.autoplay',[2000]);
+        });
 
 
        

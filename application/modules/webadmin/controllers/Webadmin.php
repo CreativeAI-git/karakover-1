@@ -50,6 +50,311 @@ class Webadmin extends Admin_Controller
     }
     // Home End //
 
+    private function generate_video_thumbnail($videoPath, $thumbPath)
+    {
+        if (!file_exists($videoPath)) {
+            return false;
+        }
+
+        $command = "ffmpeg -y -i " . escapeshellarg($videoPath) . " -ss 00:00:01 -vframes 1 -q:v 2 " . escapeshellarg($thumbPath) . " 2>&1";
+        @shell_exec($command);
+
+        return file_exists($thumbPath);
+    }
+
+    // Home Page Banner Start //
+    public function homepagebanner()
+    {
+        $options = [
+            'sort_by' => 'id',
+            'sort_direction' => 'ASC'
+        ];
+
+        $data['banners'] = $this->common->getData('home_page_banners', "", $options);
+        $this->adminHtml('Home Page Banners', 'home-page-banner-list', $data);
+    }
+
+    public function add_homepage_banner()
+    {
+        $this->form_validation->set_rules('type', 'Type', 'required');
+        $type = $this->input->post('type');
+        if ($type === 'text') {
+            $this->form_validation->set_rules('banner_text', 'Banner', 'required');
+        }
+
+        if ($this->form_validation->run() == false) {
+            $this->adminHtml('Add Home Page Banner', 'add-home-page-banner');
+        } else {
+            unset($_POST["submit"]);
+
+            if ($type === 'text') {
+                $_POST['banner'] = $this->input->post('banner_text');
+                $_POST['thumbnail_image'] = null;
+            } else {
+                if (!empty($_FILES['banner_file']['name'])) {
+                    $allowed_types = ($type === 'image')
+                        ? 'jpg|jpeg|png|webp|gif'
+                        : 'mp4|mov|avi|mkv|webm';
+
+                    $config = [
+                        'upload_path' => './assets/home_page_banners/',
+                        'allowed_types' => $allowed_types,
+                        'encrypt_name' => true,
+                        'max_size' => 51200
+                    ];
+
+                    $this->load->library('upload');
+                    $this->upload->initialize($config);
+
+                    if (!$this->upload->do_upload('banner_file')) {
+                        $this->session->set_flashdata('danger', strip_tags($this->upload->display_errors()));
+                        redirect(base_url('webadmin/add_homepage_banner'), 'refresh');
+                        return;
+                    }
+
+                    $uploadData = $this->upload->data();
+                    $_POST['banner'] = $uploadData['file_name'];
+
+                    if ($type === 'video') {
+                        $_POST['thumbnail_image'] = null;
+                        if (!empty($_FILES['thumbnail_image']['name'])) {
+                            $thumb_config = [
+                                'upload_path' => './assets/home_page_banners/',
+                                'allowed_types' => 'jpg|jpeg|png|webp|gif',
+                                'encrypt_name' => true,
+                                'max_size' => 51200
+                            ];
+                            $this->upload->initialize($thumb_config);
+                            if (!$this->upload->do_upload('thumbnail_image')) {
+                                $this->session->set_flashdata('danger', strip_tags($this->upload->display_errors()));
+                                redirect(base_url('webadmin/add_homepage_banner'), 'refresh');
+                                return;
+                            }
+                            $thumbData = $this->upload->data();
+                            $_POST['thumbnail_image'] = $thumbData['file_name'];
+                        } else {
+                            $videoPath = './assets/home_page_banners/' . $_POST['banner'];
+                            $thumbName = 'thumb_' . uniqid() . '.jpg';
+                            $thumbPath = './assets/home_page_banners/' . $thumbName;
+                            if ($this->generate_video_thumbnail($videoPath, $thumbPath)) {
+                                $_POST['thumbnail_image'] = $thumbName;
+                            }
+                        }
+                    } else {
+                        $_POST['thumbnail_image'] = null;
+                    }
+                } else {
+                    $this->session->set_flashdata('danger', 'Please select a banner file.');
+                    redirect(base_url('webadmin/add_homepage_banner'), 'refresh');
+                    return;
+                }
+            }
+            unset($_POST["banner_text"]);
+
+            $post = $this->common->getField('home_page_banners', $_POST);
+            $result = $this->common->insertData('home_page_banners', $post);
+            if ($result) {
+                $this->session->set_flashdata('success', 'Data added successfully');
+            } else {
+                $this->session->set_flashdata('danger', 'Some Error occured.');
+            }
+            redirect(base_url('webadmin/homepagebanner'), 'refresh');
+        }
+    }
+
+    public function edit_homepage_banner()
+    {
+        $banner_id = $this->uri->segment(3);
+        $data['banner'] = $this->common->getData('home_page_banners', array('id' => $banner_id), array('single'));
+
+        $this->form_validation->set_rules('type', 'Type', 'required');
+        $type = $this->input->post('type');
+        if ($type === 'text') {
+            $this->form_validation->set_rules('banner_text', 'Banner', 'required');
+        }
+
+        if ($this->form_validation->run() == false) {
+            $this->adminHtml('Update Home Page Banner', 'add-home-page-banner', $data);
+        } else {
+            unset($_POST["submit"]);
+            unset($_POST["id"]);
+
+            $existing = $data['banner'];
+
+            if ($type === 'text') {
+                $_POST['banner'] = $this->input->post('banner_text');
+                $_POST['thumbnail_image'] = null;
+                if (!empty($existing) && !empty($existing['thumbnail_image'])) {
+                    $old_thumb = './assets/home_page_banners/' . $existing['thumbnail_image'];
+                    if (file_exists($old_thumb)) {
+                        unlink($old_thumb);
+                    }
+                }
+            } else {
+                if (!empty($_FILES['banner_file']['name'])) {
+                    $allowed_types = ($type === 'image')
+                        ? 'jpg|jpeg|png|webp|gif'
+                        : 'mp4|mov|avi|mkv|webm';
+
+                    $config = [
+                        'upload_path' => './assets/home_page_banners/',
+                        'allowed_types' => $allowed_types,
+                        'encrypt_name' => true,
+                        'max_size' => 51200
+                    ];
+
+                    $this->load->library('upload');
+                    $this->upload->initialize($config);
+
+                    if (!$this->upload->do_upload('banner_file')) {
+                        $this->session->set_flashdata('danger', strip_tags($this->upload->display_errors()));
+                        redirect(base_url('webadmin/edit_homepage_banner/' . $banner_id), 'refresh');
+                        return;
+                    }
+
+                    $uploadData = $this->upload->data();
+                    $_POST['banner'] = $uploadData['file_name'];
+
+                    if (!empty($existing) && in_array($existing['type'], array('image', 'video')) && !empty($existing['banner'])) {
+                        $old_file = './assets/home_page_banners/' . $existing['banner'];
+                        if (file_exists($old_file)) {
+                            unlink($old_file);
+                        }
+                    }
+
+                    if ($type === 'video') {
+                        if (!empty($_FILES['thumbnail_image']['name'])) {
+                            $thumb_config = [
+                                'upload_path' => './assets/home_page_banners/',
+                                'allowed_types' => 'jpg|jpeg|png|webp|gif',
+                                'encrypt_name' => true,
+                                'max_size' => 51200
+                            ];
+                            $this->upload->initialize($thumb_config);
+                            if (!$this->upload->do_upload('thumbnail_image')) {
+                                $this->session->set_flashdata('danger', strip_tags($this->upload->display_errors()));
+                                redirect(base_url('webadmin/edit_homepage_banner/' . $banner_id), 'refresh');
+                                return;
+                            }
+                            $thumbData = $this->upload->data();
+                            $_POST['thumbnail_image'] = $thumbData['file_name'];
+                            if (!empty($existing) && !empty($existing['thumbnail_image'])) {
+                                $old_thumb = './assets/home_page_banners/' . $existing['thumbnail_image'];
+                                if (file_exists($old_thumb)) {
+                                    unlink($old_thumb);
+                                }
+                            }
+                        } else if (empty($existing['thumbnail_image'])) {
+                            $videoPath = './assets/home_page_banners/' . $_POST['banner'];
+                            $thumbName = 'thumb_' . uniqid() . '.jpg';
+                            $thumbPath = './assets/home_page_banners/' . $thumbName;
+                            if ($this->generate_video_thumbnail($videoPath, $thumbPath)) {
+                                $_POST['thumbnail_image'] = $thumbName;
+                                if (!empty($existing) && !empty($existing['thumbnail_image'])) {
+                                    $old_thumb = './assets/home_page_banners/' . $existing['thumbnail_image'];
+                                    if (file_exists($old_thumb)) {
+                                        unlink($old_thumb);
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        $_POST['thumbnail_image'] = null;
+                        if (!empty($existing) && !empty($existing['thumbnail_image'])) {
+                            $old_thumb = './assets/home_page_banners/' . $existing['thumbnail_image'];
+                            if (file_exists($old_thumb)) {
+                                unlink($old_thumb);
+                            }
+                        }
+                    }
+                } else {
+                    if (empty($existing) || empty($existing['banner']) || $existing['type'] !== $type) {
+                        $this->session->set_flashdata('danger', 'Please select a banner file.');
+                        redirect(base_url('webadmin/edit_homepage_banner/' . $banner_id), 'refresh');
+                        return;
+                    }
+                    unset($_POST['banner']);
+                    if ($type !== 'video') {
+                        $_POST['thumbnail_image'] = null;
+                        if (!empty($existing) && !empty($existing['thumbnail_image'])) {
+                            $old_thumb = './assets/home_page_banners/' . $existing['thumbnail_image'];
+                            if (file_exists($old_thumb)) {
+                                unlink($old_thumb);
+                            }
+                        }
+                    } else {
+                        if (!empty($_FILES['thumbnail_image']['name'])) {
+                            $thumb_config = [
+                                'upload_path' => './assets/home_page_banners/',
+                                'allowed_types' => 'jpg|jpeg|png|webp|gif',
+                                'encrypt_name' => true,
+                                'max_size' => 51200
+                            ];
+                            $this->upload->initialize($thumb_config);
+                            if (!$this->upload->do_upload('thumbnail_image')) {
+                                $this->session->set_flashdata('danger', strip_tags($this->upload->display_errors()));
+                                redirect(base_url('webadmin/edit_homepage_banner/' . $banner_id), 'refresh');
+                                return;
+                            }
+                            $thumbData = $this->upload->data();
+                            $_POST['thumbnail_image'] = $thumbData['file_name'];
+                            if (!empty($existing) && !empty($existing['thumbnail_image'])) {
+                                $old_thumb = './assets/home_page_banners/' . $existing['thumbnail_image'];
+                                if (file_exists($old_thumb)) {
+                                    unlink($old_thumb);
+                                }
+                            }
+                        } else if (empty($existing['thumbnail_image']) && !empty($existing['banner'])) {
+                            $videoPath = './assets/home_page_banners/' . $existing['banner'];
+                            $thumbName = 'thumb_' . uniqid() . '.jpg';
+                            $thumbPath = './assets/home_page_banners/' . $thumbName;
+                            if ($this->generate_video_thumbnail($videoPath, $thumbPath)) {
+                                $_POST['thumbnail_image'] = $thumbName;
+                            }
+                        }
+                    }
+                }
+            }
+            unset($_POST["banner_text"]);
+
+            $result = $this->common->updateData('home_page_banners', $_POST, array('id' => $banner_id));
+            if ($result) {
+                $this->session->set_flashdata('success', 'Data updated successfully');
+            } else {
+                $this->session->set_flashdata('danger', 'Some error occurred.');
+            }
+            redirect(base_url('webadmin/homepagebanner'), 'refresh');
+        }
+    }
+
+    public function delete_homepage_banner()
+    {
+        $id = $this->uri->segment(3);
+        $data = $this->common->getData('home_page_banners', array('id' => $id), array('single'));
+        if ($data) {
+            if (in_array($data['type'], array('image', 'video')) && !empty($data['banner'])) {
+                $file = './assets/home_page_banners/' . $data['banner'];
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+            if (!empty($data['thumbnail_image'])) {
+                $thumb = './assets/home_page_banners/' . $data['thumbnail_image'];
+                if (file_exists($thumb)) {
+                    unlink($thumb);
+                }
+            }
+            $result = $this->common->deleteData('home_page_banners', array('id' => $id));
+            if ($result) {
+                $this->session->set_flashdata('success', 'Home page banner deleted successfully');
+            } else {
+                $this->session->set_flashdata('danger', 'Some Error occured.');
+            }
+            redirect(base_url('webadmin/homepagebanner'), 'refresh');
+        }
+    }
+    // Home Page Banner End //
+
     // About Start //
     public function aboutpage()
     {

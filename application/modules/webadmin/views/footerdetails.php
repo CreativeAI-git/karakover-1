@@ -36,6 +36,10 @@
         <input type="text" name="number" maxlength="12" class="form-control" placeholder="Number" value="<?php if(!empty($footer[0])){ echo $footer[0]['number']; } ?>">
         <p><?php echo form_error('number', '<span class="error_msg">', '</span>'); ?></p>   
         </div>
+        <div class="form-group" id="main">
+        <input type="email" name="email" maxlength="150" class="form-control" placeholder="Email" value="<?php if(!empty($footer[0])){ echo $footer[0]['email']; } ?>">
+        <p><?php echo form_error('email', '<span class="error_msg">', '</span>'); ?></p>   
+        </div>
         <div class="form-group">
           <div class="text-right">
             <?php if(!empty($footer[0])){ ?>

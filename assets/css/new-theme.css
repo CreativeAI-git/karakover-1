@@ -1207,6 +1207,7 @@ div#dataTable_paginate {
 
 div#dataTable_filter {
     text-align: center;
+    justify-content: end;
 }
 
 div#dataTable_filter label {
@@ -1309,4 +1310,5 @@ div#dataTable_info {
     height: 2px;
     background: #0d6efd;
 }
+
 /*gl css E

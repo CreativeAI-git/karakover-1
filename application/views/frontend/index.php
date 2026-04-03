@@ -89,7 +89,13 @@
   <div class="container">
 
     <div class="ct_heading mb-5" data-aos="fade-down" data-aos-duration="1000">
-      <h2 class="ct_head_h2">Songs with guitar instrument</h2>
+      <h2 class="ct_head_h2">
+        <?php
+        echo !empty($home_page_banner_settings['title'])
+          ? $home_page_banner_settings['title']
+          : 'Songs with guitar instrument';
+        ?>
+      </h2>
     </div>
 
     <div class="row" data-aos="fade-down" data-aos-duration="1000">

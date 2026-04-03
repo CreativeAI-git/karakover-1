@@ -71,7 +71,43 @@ class Webadmin extends Admin_Controller
         ];
 
         $data['banners'] = $this->common->getData('home_page_banners', "", $options);
+        $data['banner_settings'] = $this->common->getData('home_page_banner_settings', array('id' => 1), array('single'));
         $this->adminHtml('Home Page Banners', 'home-page-banner-list', $data);
+    }
+
+    public function update_homepage_banner_title()
+    {
+        $this->form_validation->set_rules('section_title', 'Section Title', 'required|trim');
+
+        if ($this->form_validation->run() == false) {
+            $this->session->set_flashdata('danger', strip_tags(validation_errors()));
+            redirect(base_url('webadmin/homepagebanner'), 'refresh');
+            return;
+        }
+
+        $title = $this->input->post('section_title', true);
+        $existing = $this->common->getData('home_page_banner_settings', array('id' => 1), array('single'));
+
+        $payload = array(
+            'title' => $title,
+            'updated_at' => date('Y-m-d H:i:s')
+        );
+
+        if (!empty($existing)) {
+            $result = $this->common->updateData('home_page_banner_settings', $payload, array('id' => 1));
+        } else {
+            $payload['id'] = 1;
+            $payload['created_at'] = date('Y-m-d H:i:s');
+            $result = $this->common->insertData('home_page_banner_settings', $payload);
+        }
+
+        if ($result) {
+            $this->session->set_flashdata('success', 'Banner section title updated successfully');
+        } else {
+            $this->session->set_flashdata('danger', 'Some error occurred while updating the title.');
+        }
+
+        redirect(base_url('webadmin/homepagebanner'), 'refresh');
     }
 
     public function add_homepage_banner()
@@ -657,6 +693,7 @@ class Webadmin extends Admin_Controller
         $this->form_validation->set_rules('address', 'Address', 'required');
         $this->form_validation->set_rules('details', 'Details', 'required');
         $this->form_validation->set_rules('number', 'Number', 'required|numeric|min_length[10]|max_length[12]');
+        $this->form_validation->set_rules('email', 'Email', 'valid_email');
         $data['footer'] = $this->common->getData('web_footer', array());
         if ($this->form_validation->run() == false) {
             $this->adminHtml('Footer Details Page', 'footerdetails', $data);

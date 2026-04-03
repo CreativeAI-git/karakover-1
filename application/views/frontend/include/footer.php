@@ -67,7 +67,7 @@
         <div class="ct_footer_add ct_footer_links">
           <h4>Contact Us</h4>
           <ul>
-            <li>
+            <!-- <li>
               <div class="ct_contact_info">
                 <i class="fa fa-location-arrow" aria-hidden="true"></i>
                 <div class="ct_address_cnt">
@@ -85,7 +85,18 @@
                                                                       } ?></a><br></p>
                 </div>
               </div>
-            </li>
+            </li> -->
+            <?php if (!empty($footer) && !empty($footer[0]['email'])) { ?>
+              <li>
+                <div class="ct_contact_info">
+                  <i class="fa fa-envelope" aria-hidden="true"></i>
+                  <div class="ct_address_cnt">
+                    <h6>Email:</h6>
+                    <p><a href="mailto:<?php echo $footer[0]['email']; ?>"><?php echo $footer[0]['email']; ?></a></p>
+                  </div>
+                </div>
+              </li>
+            <?php } ?>
           </ul>
           <br>
           <h4>

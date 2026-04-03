@@ -1,39 +1,55 @@
 <section class="ct_sec_padd ct_over_flow_hidden">
   <div class="container">
-    <div class="row align-items-center">
+    <div class="row align-items-start">
 
-      <?php if(!empty($about) && !empty($about[0]['image'])) { 
+      <?php if (!empty($about) && !empty($about[0]['image'])) {
         $aboutimg = explode(',', $about[0]['image']);
         $aboutimg = array_values(array_filter(array_map('trim', $aboutimg)));
+        $aboutCount = count($aboutimg);
+        $aboutLayout = $aboutCount === 1 ? 'ct_about_images--one' : ($aboutCount === 2 ? 'ct_about_images--two' : 'ct_about_images--three');
       ?>
 
-      <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-duration="1000">
-        <div class="ct_about_images">
+        <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-duration="1000">
+          <div class="ct_about_images ct_abt_single_img <?php echo $aboutLayout; ?>">
+            <?php if ($aboutCount === 1) { ?>
+              <div class="ct_left_abt_img ct_abt_single">
+                <?php if (isset($aboutimg[0])) { ?>
+                  <img class="ct_left_abt_img_1" src="<?php echo base_url('/assets/website/about/' . $aboutimg[0]); ?>" alt="img">
+                <?php } ?>
+              </div>
+            <?php } elseif ($aboutCount === 2) { ?>
+              <div class="ct_abt_two_grid">
+                <?php if (isset($aboutimg[0])) { ?>
+                  <img class="ct_abt_two_img" src="<?php echo base_url('/assets/website/about/' . $aboutimg[0]); ?>" alt="img">
+                <?php } ?>
+                <?php if (isset($aboutimg[1])) { ?>
+                  <img class="ct_abt_two_img" src="<?php echo base_url('/assets/website/about/' . $aboutimg[1]); ?>" alt="img">
+                <?php } ?>
+              </div>
+            <?php } else { ?>
+              <div class="ct_left_abt_img">
+                <?php if (isset($aboutimg[0])) { ?>
+                  <img class="ct_left_abt_img_1" src="<?php echo base_url('/assets/website/about/' . $aboutimg[0]); ?>" alt="img">
+                <?php } ?>
+              </div>
 
-          <div class="ct_left_abt_img">
-            <?php if(isset($aboutimg[0])) { ?>
-              <img src="<?php echo base_url('/assets/website/about/'.$aboutimg[0]); ?>" alt="img">
-            <?php } ?>
-
-            <?php if(isset($aboutimg[1])) { ?>
-              <img src="<?php echo base_url('/assets/website/about/'.$aboutimg[1]); ?>" alt="img">
+              <div class="ct_right_abt_img ct_right_abt_img1">
+                <?php if (isset($aboutimg[1])) { ?>
+                  <img class="ct_left_abt_img_2" src="<?php echo base_url('/assets/website/about/' . $aboutimg[1]); ?>" alt="img">
+                <?php } ?>
+                <?php if (isset($aboutimg[2])) { ?>
+                  <img class="ct_left_abt_img_3" src="<?php echo base_url('/assets/website/about/' . $aboutimg[2]); ?>" alt="img">
+                <?php } ?>
+              </div>
             <?php } ?>
           </div>
+        </div>
 
-          <div class="ct_right_abt_img">
-            <?php if(isset($aboutimg[2])) { ?>
-              <img src="<?php echo base_url('/assets/website/about/'.$aboutimg[2]); ?>" alt="img">
-            <?php } ?>
+        <div class="col-lg-6 mb-4 ps-md-3" data-aos="fade-up" data-aos-duration="1000">
+          <div class="ct_about_cnt">
+            <?php echo !empty($about[0]['details']) ? $about[0]['details'] : ''; ?>
           </div>
-
         </div>
-      </div>
-
-      <div class="col-lg-6 mb-4 ps-md-5" data-aos="fade-up" data-aos-duration="1000">
-        <div class="ct_about_cnt">
-          <?php echo !empty($about[0]['details']) ? $about[0]['details'] : ''; ?>
-        </div>
-      </div>
 
       <?php } ?>
 
@@ -48,29 +64,23 @@
   <div class="container">
     <div class="row align-items-center">
 
-      <?php if(!empty($about) && isset($about[1])) { ?>
+      <?php if (!empty($about) && isset($about[1])) { ?>
 
-      <div class="col-md-5 mb-4" data-aos="fade-right" data-aos-duration="1000">
-        <div class="ct_prentation_video">
+        <div class="col-md-5 mb-4" data-aos="fade-right" data-aos-duration="1000">
+          <div class="ct_prentation_video">
 
-          <?php if(!empty($about[1]['image'])) { ?>
-            <img src="<?php echo base_url('/assets/website/about/'.$about[1]['image']); ?>" alt="img">
-          <?php } ?>
+            <?php if (!empty($about[1]['image'])) { ?>
+              <img src="<?php echo base_url('/assets/website/about/' . $about[1]['image']); ?>" alt="img">
+            <?php } ?>
 
-          <button class="ct_video_btn">
-            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
-              <path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/>
-            </svg>
-          </button>
-
+          </div>
         </div>
-      </div>
 
-      <div class="col-md-6 mb-4 offset-md-1" data-aos="fade-left" data-aos-duration="1000">
-        <div class="ct_how_works_cnt">
-          <?php echo !empty($about[1]['details']) ? $about[1]['details'] : ''; ?>
+        <div class="col-md-6 mb-4 offset-md-1" data-aos="fade-left" data-aos-duration="1000">
+          <div class="ct_how_works_cnt">
+            <?php echo !empty($about[1]['details']) ? $about[1]['details'] : ''; ?>
+          </div>
         </div>
-      </div>
 
       <?php } ?>
 
@@ -88,25 +98,26 @@
     </div>
 
     <div class="row">
-      <?php if(!empty($ourteam)) { 
-        foreach($ourteam as $teamvalue){ ?>
-        
-        <div class="col-md-4 mb-5" data-aos="fade-up" data-aos-duration="1000">
-          <div class="ct_team_card">
+      <?php if (!empty($ourteam)) {
+        foreach ($ourteam as $teamvalue) { ?>
 
-            <?php if(!empty($teamvalue['image'])) { ?>
-              <img src="<?php echo base_url('/assets/website/ourteam/'.$teamvalue['image']); ?>" alt="">
-            <?php } ?>
+          <div class="col-md-4 mb-5" data-aos="fade-up" data-aos-duration="1000">
+            <div class="ct_team_card">
 
-            <div class="ct_team_info">
-              <h4><?php echo !empty($teamvalue['name']) ? $teamvalue['name'] : ''; ?></h4>
-              <p class="mb-0"><?php echo !empty($teamvalue['title']) ? $teamvalue['title'] : ''; ?></p>
+              <?php if (!empty($teamvalue['image'])) { ?>
+                <img src="<?php echo base_url('/assets/website/ourteam/' . $teamvalue['image']); ?>" alt="">
+              <?php } ?>
+
+              <div class="ct_team_info">
+                <h4><?php echo !empty($teamvalue['name']) ? $teamvalue['name'] : ''; ?></h4>
+                <p class="mb-0"><?php echo !empty($teamvalue['title']) ? $teamvalue['title'] : ''; ?></p>
+              </div>
+
             </div>
-
           </div>
-        </div>
 
-      <?php } } ?>
+      <?php }
+      } ?>
     </div>
   </div>
 </section>

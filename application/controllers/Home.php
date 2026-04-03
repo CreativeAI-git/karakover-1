@@ -13,6 +13,7 @@ class Home extends CI_Controller
 		$data['about'] = $this->common->getData('web_about', array(), array());
 		$data['instrument'] = $this->common->getData('web_instrument', array());
 		$data['home_page_banners'] = $this->common->getData('home_page_banners', array(), array('sort_by' => 'id', 'sort_direction' => 'ASC'));
+		$data['home_page_banner_settings'] = $this->common->getData('home_page_banner_settings', array('id' => 1), array('single'));
 		$data['footer'] = $this->common->getData('web_footer', array(), array());
 		$this->load->view('frontend/include/index', $data);
 	}

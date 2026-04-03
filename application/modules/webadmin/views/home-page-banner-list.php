@@ -20,6 +20,30 @@
     ?>
   </div>
 
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <form method="post" action="<?= base_url('webadmin/update_homepage_banner_title'); ?>" class="form-horizontal">
+        <div class="form-group gl_text_black">
+          <label class="control-label">Section Title</label>
+          <div class="d-md-flex justify-content-between gap-3 align-items-center">
+            <div class="w-100">
+              <input
+                type="text"
+                name="section_title"
+                class="form-control"
+                placeholder="Home Page Banner Title"
+                value="<?= !empty($banner_settings['title']) ? $banner_settings['title'] : ''; ?>"
+                required>
+            </div>
+            <div class="ml-2 mt-md-0 mt-2">
+              <button type="submit" class="btn btn-success gl_btn_bg_blue">Save</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- DataTales Example -->
   <div class="card shadow mb-4">
     <div class="card-body">
@@ -44,7 +68,7 @@
                     <?php if (!empty($value['type']) && $value['type'] === 'image' && !empty($value['banner'])) { ?>
                       <img src="<?= base_url('/assets/home_page_banners/') . $value['banner']; ?>" width="100" height="100">
                     <?php } else if (!empty($value['type']) && $value['type'] === 'video' && !empty($value['banner'])) { ?>
-                      <video width="150" height="100" controls <?php if (!empty($value['thumbnail_image'])) { ?>poster="<?= base_url('/assets/home_page_banners/') . $value['thumbnail_image']; ?>"<?php } ?>>
+                      <video width="150" height="100" controls <?php if (!empty($value['thumbnail_image'])) { ?>poster="<?= base_url('/assets/home_page_banners/') . $value['thumbnail_image']; ?>" <?php } ?>>
                         <source src="<?= base_url('/assets/home_page_banners/') . $value['banner']; ?>" type="video/mp4">
                       </video>
                     <?php } else if (!empty($value['banner'])) { ?>

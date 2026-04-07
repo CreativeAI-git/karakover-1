@@ -67,7 +67,7 @@
             <div class="card-body p-4">
               <div class="text-center mb-4">
                 <div style="display: inline-block; padding: 12px 18px; background: #1f1f1f; border-radius: 12px;">
-                  <img src="https://159.223.251.167/assets/logo.png" alt="Karakover Logo" style="max-width: 180px; height: auto;">
+                  <img src="https://karakover.com/assets/logo.png" alt="Karakover Logo" style="max-width: 180px; height: auto;">
                 </div>
               </div>
               <h3 class="mb-0 text-center">Delete Account</h3>

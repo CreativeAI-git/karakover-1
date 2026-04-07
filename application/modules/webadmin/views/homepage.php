@@ -27,9 +27,9 @@
           <?php echo form_error('details', '<span class="error_msg">', '</span>'); ?>
         </div>
         <div class="form-group gl_text_black">
-          <label class="col-sm-2 control-label label-input-lg">upload Image</label>
-          <div class="col-sm-8" id="image-preview-container">
-              <input type="file" name="image" id="gl_cover_art" onchange="previewImages()">
+          <label class="col-sm-2 control-label label-input-lg">Upload Image</label>
+          <div id="image-preview-container">
+              <input type="file" name="image" class="form-control h-auto" id="gl_cover_art" onchange="previewImages()">
               <br/>
               <div id="image-preview">
                 <?php if(!empty($home[0])){ ?><br/><br/>

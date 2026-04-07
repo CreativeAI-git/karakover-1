@@ -1,4 +1,3 @@
-
 <div class="container-fluid">
 
   <!-- Page Heading -->
@@ -41,8 +40,8 @@
             <label class="col-sm-2 control-label">Banner</label>
             <div class="col-sm-8">
               <textarea name="banner_text" class="form-control" rows="4" placeholder="Banner text"><?php if ($selectedType === 'text') {
-                                                                                                    echo $bannerValue;
-                                                                                                  } ?></textarea>
+                                                                                                      echo $bannerValue;
+                                                                                                    } ?></textarea>
               <p><?php echo form_error('banner_text', '<span class="error_msg">', '</span>'); ?></p>
             </div>
           </div>
@@ -50,7 +49,7 @@
           <div class="form-group gl_text_black" id="banner_file_group">
             <label class="col-sm-2 control-label label-input-lg">Banner File</label>
             <div class="col-sm-8" id="admin_profile">
-              <input type="file" name="banner_file" id="banner_file" class="form-control" data-has-existing="<?= $hasExistingBanner; ?>" data-existing-type="<?= $existingType; ?>">
+              <input type="file" name="banner_file" id="banner_file" class="form-control h-auto" data-has-existing="<?= $hasExistingBanner; ?>" data-existing-type="<?= $existingType; ?>">
               <div class="mt-3">
                 <img class="img-responsive" src="<?php if ($selectedType === 'image' && !empty($bannerValue)) {
                                                     echo base_url('assets/home_page_banners/' . $bannerValue);
@@ -67,7 +66,7 @@
           <div class="form-group gl_text_black" id="thumbnail_group">
             <label class="col-sm-2 control-label label-input-lg">Thumbnail Image</label>
             <div class="col-sm-8" id="admin_profile">
-              <input type="file" name="thumbnail_image" id="thumbnail_image" class="form-control" accept="image/*">
+              <input type="file" name="thumbnail_image" id="thumbnail_image" class="form-control h-auto" accept="image/*">
               <small class="text-muted">If you don't upload a thumbnail, it will be auto-generated from the video.</small>
               <div class="mt-3">
                 <img class="img-responsive" src="<?php if ($selectedType === 'video' && !empty($thumbnailValue)) {

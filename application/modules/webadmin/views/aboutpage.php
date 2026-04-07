@@ -33,9 +33,9 @@
         <?php if($key==0){ ?>
         <div class="form-group gl_text_black">
           <label class="col-sm-2 control-label label-input-lg">Primary Image</label>
-          <div class="col-sm-8" id="image-preview-container">
+          <div id="image-preview-container">
               <input type="hidden" name="checkstatus" value="multiplecheck">
-              <input type="file" name="image[]" id="gl_cover_art" multiple onchange="handlePrimarySelection(this);">
+              <input type="file" name="image[]" class="form-control h-auto" id="gl_cover_art" multiple onchange="handlePrimarySelection(this);">
               <br/>
               <small id="primary-image-error" class="text-danger"></small>
               <div id="image-preview<?php echo ($key==0)?'':$key; ?>" class="about-image-preview" data-max="3">
@@ -60,8 +60,8 @@
         <?php }else{ ?>
           <div class="form-group gl_text_black">
             <label class="col-sm-2 control-label label-input-lg">Secondary Image</label>
-            <div class="col-sm-8" id="image-preview-container">
-                <input type="file" name="image" id="gl_cover_art1"  onchange="handleSecondarySelection(this);">
+            <div id="image-preview-container">
+                <input type="file" name="image" class="form-control h-auto" id="gl_cover_art1"  onchange="handleSecondarySelection(this);">
                 <br/>
                 <small id="secondary-image-error" class="text-danger"></small>
                 <div id="image-preview<?php echo $key; ?>" class="about-image-preview" data-max="1">

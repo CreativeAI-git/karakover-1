@@ -71,6 +71,7 @@
 
 
           var owl = $('.ct_app_screen_shot');
+          var bannerAutoplayTimeout = 3000;
 
           function resetVideos() {
             owl.find('video').each(function(){
@@ -88,8 +89,9 @@
             margin:10,
             nav:false,
             autoplay:true,
-            autoplayTimeout:2000 ,
-            smartSpeed:1000,
+            autoplayTimeout:bannerAutoplayTimeout,
+            autoplayHoverPause:true,
+            smartSpeed:800,
             responsive:{
                 0:{
                     items:1
@@ -103,9 +105,9 @@
             }
         });
 
-        owl.on('changed.owl.carousel', function() {
+          owl.on('changed.owl.carousel', function() {
           resetVideos();
-          owl.trigger('play.owl.autoplay',[2000]);
+          owl.trigger('play.owl.autoplay',[bannerAutoplayTimeout]);
         });
 
         $(document).on('click', '.ct_video_play', function(){
@@ -124,14 +126,14 @@
           video.onended = function(){
             $btn.removeClass('ct_hide_play');
             $pauseBtn.addClass('ct_hide_play');
-            owl.trigger('play.owl.autoplay',[2000]);
+            owl.trigger('play.owl.autoplay',[bannerAutoplayTimeout]);
           };
 
           video.onpause = function(){
             if (video.currentTime === 0 || video.ended) return;
             $btn.removeClass('ct_hide_play');
             $pauseBtn.addClass('ct_hide_play');
-            owl.trigger('play.owl.autoplay',[2000]);
+            owl.trigger('play.owl.autoplay',[bannerAutoplayTimeout]);
           };
         });
 
@@ -144,7 +146,7 @@
           video.pause();
           $btn.addClass('ct_hide_play');
           $playBtn.removeClass('ct_hide_play');
-          owl.trigger('play.owl.autoplay',[2000]);
+          owl.trigger('play.owl.autoplay',[bannerAutoplayTimeout]);
         });
 
 

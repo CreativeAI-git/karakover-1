@@ -1,33 +1,33 @@
 <style>
-  .ct_music_p_center p{
-    text-align:center;
-    margin-bottom:10px
+  .ct_music_p_center p {
+    text-align: center;
+    margin-bottom: 10px
   }
 </style>
 
 <!-- <section class="ct_sec_padd ct_over_flow_hidden">
   <div class="container">
     <div class="row align-items-center">
-      <?php if(!empty($about)) { 
-        $aboutimg = explode(',', $about[0]['image']); 
+      <?php if (!empty($about)) {
+        $aboutimg = explode(',', $about[0]['image']);
       ?>
 
       <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-duration="1000">
         <div class="ct_about_images">
 
           <div class="ct_left_abt_img">
-            <?php if(isset($aboutimg[0])) { ?>
-              <img src="<?php echo base_url('/assets/website/about/'.trim($aboutimg[0])); ?>" alt="img">
+            <?php if (isset($aboutimg[0])) { ?>
+              <img src="<?php echo base_url('/assets/website/about/' . trim($aboutimg[0])); ?>" alt="img">
             <?php } ?>
 
-            <?php if(isset($aboutimg[1])) { ?>
-              <img src="<?php echo base_url('/assets/website/about/'.trim($aboutimg[1])); ?>" alt="img">
+            <?php if (isset($aboutimg[1])) { ?>
+              <img src="<?php echo base_url('/assets/website/about/' . trim($aboutimg[1])); ?>" alt="img">
             <?php } ?>
           </div>
 
           <div class="ct_right_abt_img">
-            <?php if(isset($aboutimg[2])) { ?>
-              <img src="<?php echo base_url('/assets/website/about/'.trim($aboutimg[2])); ?>" alt="img">
+            <?php if (isset($aboutimg[2])) { ?>
+              <img src="<?php echo base_url('/assets/website/about/' . trim($aboutimg[2])); ?>" alt="img">
             <?php } ?>
           </div>
 
@@ -54,30 +54,31 @@
     <h2 class="ct_head_h2 text-center mb-5">Music Classes</h2>
 
     <div class="row">
-      <?php if(!empty($instrument)) { 
-        foreach($instrument as $valinstru){ ?>
-        
-        <div class="col-md-4 mb-4" data-aos="fade-right" data-aos-duration="1000">
-          <div class="ct_music_class_box ct_music_p_center">
-            
-            <div class="ct_music_icon">
-              <?php if(!empty($valinstru['image'])) { ?>
-                <img src="<?php echo base_url('/assets/website/instrument/'.$valinstru['image']); ?>" alt="img">
-              <?php } ?>
+      <?php if (!empty($instrument)) {
+        foreach ($instrument as $valinstru) { ?>
+
+          <div class="col-md-4 mb-4" data-aos="fade-right" data-aos-duration="1000">
+            <div class="ct_music_class_box ct_music_p_center">
+
+              <div class="ct_music_icon">
+                <?php if (!empty($valinstru['image'])) { ?>
+                  <img src="<?php echo base_url('/assets/website/instrument/' . $valinstru['image']); ?>" alt="img">
+                <?php } ?>
+              </div>
+
+              <h6 class="ct_head_h6 text-center">
+                <?php echo !empty($valinstru['title']) ? $valinstru['title'] : ''; ?>
+              </h6>
+
+              <p class="text-center">
+                <?php echo !empty($valinstru['details']) ? substr($valinstru['details'], 0, 150) : ''; ?>
+              </p>
+
             </div>
-
-            <h6 class="ct_head_h6 text-center">
-              <?php echo !empty($valinstru['title']) ? $valinstru['title'] : ''; ?>
-            </h6>
-
-            <p class="text-center">
-              <?php echo !empty($valinstru['details']) ? substr($valinstru['details'],0,150) : ''; ?>
-            </p>
-
           </div>
-        </div>
 
-      <?php } } ?>
+      <?php }
+      } ?>
     </div>
   </div>
 </section>
@@ -106,28 +107,28 @@
           <?php if (!empty($home_page_banners)) {
             foreach ($home_page_banners as $banner) { ?>
               <div class="item">
-                <div class="ct_song_card">
+                <div class="ct_song_card ct_home_card">
 
                   <?php if (!empty($banner['type']) && $banner['type'] === 'image' && !empty($banner['banner'])) { ?>
-                    <img src="<?php echo base_url('assets/home_page_banners/' . $banner['banner']); ?>" alt="banner">
+                    <img src="<?php echo base_url('assets/home_page_banners/' . $banner['banner']); ?>" class="ct_home_media ct_home_image" alt="banner">
                     <div class="ct_overlay_song_filter">
                       <p>Image Banner</p>
                     </div>
                   <?php } else if (!empty($banner['type']) && $banner['type'] === 'video' && !empty($banner['banner'])) { ?>
-                    <video class="ct_banner_video" width="100%" height="100%" style="object-fit:cover;" preload="metadata" <?php if (!empty($banner['thumbnail_image'])) { ?>poster="<?php echo base_url('assets/home_page_banners/' . $banner['thumbnail_image']); ?>"<?php } ?>>
+                    <video class="ct_banner_video ct_home_media ct_home_video" preload="metadata" playsinline <?php if (!empty($banner['thumbnail_image'])) { ?>poster="<?php echo base_url('assets/home_page_banners/' . $banner['thumbnail_image']); ?>" <?php } ?>>
                       <source src="<?php echo base_url('assets/home_page_banners/' . $banner['banner']); ?>" type="video/mp4">
                     </video>
                     <button type="button" class="ct_video_play" aria-label="Play video">
                       <i class="fa-solid fa-play"></i>
                     </button>
-                    <button type="button" class="ct_video_pause ct_hide_play" aria-label="Pause video">
+                    <button type="button" class="ct_video_pause ct_hide_play " aria-label="Pause video">
                       <i class="fa-solid fa-pause"></i>
                     </button>
                     <div class="ct_overlay_song_filter">
                       <p>Video Banner</p>
                     </div>
                   <?php } else { ?>
-                    <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; text-align:center; padding:20px; background:#111; color:#fff;">
+                    <div class="ct_home_text">
                       <?php echo !empty($banner['banner']) ? $banner['banner'] : 'Home Page Banner'; ?>
                     </div>
                   <?php } ?>

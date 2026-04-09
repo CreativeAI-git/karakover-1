@@ -73,21 +73,89 @@
           var owl = $('.ct_app_screen_shot');
           var bannerAutoplayTimeout = 3000;
 
-          function resetVideos() {
-            owl.find('video').each(function(){
+          function resetVideos($scope) {
+            var $root = ($scope && $scope.length) ? $scope : owl;
+            if (!$root || !$root.length) return;
+            $root.find('video').each(function(){
               try {
                 this.pause();
                 this.currentTime = 0;
               } catch (e) {}
             });
-            owl.find('.ct_video_play').removeClass('ct_hide_play');
-            owl.find('.ct_video_pause').addClass('ct_hide_play');
+            $root.find('.ct_video_play').removeClass('ct_hide_play');
+            $root.find('.ct_video_pause').addClass('ct_hide_play');
+          }
+
+          function setVideoUiState($card, isPlaying) {
+            if (!$card || !$card.length) return;
+            var $playBtn = $card.find('.ct_video_play');
+            var $pauseBtn = $card.find('.ct_video_pause');
+            if (isPlaying) {
+              $playBtn.addClass('ct_hide_play');
+              $pauseBtn.removeClass('ct_hide_play');
+            } else {
+              $playBtn.removeClass('ct_hide_play');
+              $pauseBtn.addClass('ct_hide_play');
+            }
+          }
+
+          function pauseTutorialCarousel($carousel) {
+            if (!$carousel || !$carousel.length) return;
+            var el = $carousel.get(0);
+            if (window.bootstrap && window.bootstrap.Carousel) {
+              var instance = window.bootstrap.Carousel.getOrCreateInstance(el);
+              instance.pause();
+            } else if ($carousel.carousel) {
+              $carousel.carousel('pause');
+            }
+          }
+
+          function cycleTutorialCarousel($carousel) {
+            if (!$carousel || !$carousel.length) return;
+            var el = $carousel.get(0);
+            if (window.bootstrap && window.bootstrap.Carousel) {
+              var instance = window.bootstrap.Carousel.getOrCreateInstance(el);
+              instance.cycle();
+            } else if ($carousel.carousel) {
+              $carousel.carousel('cycle');
+            }
+          }
+
+          function lockTutorialCarousel($carousel, locked) {
+            if (!$carousel || !$carousel.length) return;
+            if (locked) {
+              $carousel.attr('data-video-playing', '1').addClass('ct_carousel_locked');
+            } else {
+              $carousel.removeAttr('data-video-playing').removeClass('ct_carousel_locked');
+            }
+          }
+
+          function lockOwlCarousel(locked) {
+            if (!owl || !owl.length) return;
+            var isLocked = owl.data('ct-locked') === true;
+            if (locked === isLocked) return;
+            owl.data('ct-locked', !!locked);
+            var owlData = owl.data('owl.carousel');
+            if (!owlData) return;
+            owlData.options.mouseDrag = !locked;
+            owlData.options.touchDrag = !locked;
+            owlData.options.pullDrag = !locked;
+            owlData.options.freeDrag = !locked;
+            owl.toggleClass('ct_carousel_locked', !!locked);
+            owl.trigger('refresh.owl.carousel');
+            if (!locked) {
+              owl.trigger('play.owl.autoplay',[bannerAutoplayTimeout]);
+            }
           }
 
           owl.owlCarousel({
             loop:true,
             margin:10,
-            nav:false,
+            nav:true,
+            navText:[
+              '<span class="ct_nav_btn ct_nav_prev"><i class="fa-solid fa-angle-left"></i></span>',
+              '<span class="ct_nav_btn ct_nav_next"><i class="fa-solid fa-angle-right"></i></span>'
+            ],
             autoplay:true,
             autoplayTimeout:bannerAutoplayTimeout,
             autoplayHoverPause:true,
@@ -106,9 +174,10 @@
         });
 
           owl.on('changed.owl.carousel', function() {
-          resetVideos();
-          owl.trigger('play.owl.autoplay',[bannerAutoplayTimeout]);
+          resetVideos(owl);
         });
+
+          owl.trigger('play.owl.autoplay',[bannerAutoplayTimeout]);
 
         $(document).on('click', '.ct_video_play', function(){
           var $btn = $(this);
@@ -117,23 +186,60 @@
           var $pauseBtn = $card.find('.ct_video_pause');
           if (!video) return;
 
-          resetVideos();
-          $btn.addClass('ct_hide_play');
-          $pauseBtn.removeClass('ct_hide_play');
-          owl.trigger('stop.owl.autoplay');
-          video.play();
+          var $scope = $card.closest('.ct_app_screen_shot, #tutorialCarousel');
+          var isOwl = $scope.is('.ct_app_screen_shot');
+
+          resetVideos($scope);
+          setVideoUiState($card, true);
+
+          if (isOwl) {
+            owl.trigger('stop.owl.autoplay');
+            lockOwlCarousel(true);
+          } else {
+            pauseTutorialCarousel($scope);
+            lockTutorialCarousel($scope, true);
+          }
+
+          video.muted = false;
+          video.volume = 1;
+          var playPromise = video.play();
+          if (playPromise && playPromise.catch) {
+            playPromise.catch(function(){
+              setVideoUiState($card, false);
+              if (isOwl) {
+                lockOwlCarousel(false);
+                owl.trigger('play.owl.autoplay',[bannerAutoplayTimeout]);
+              } else {
+                lockTutorialCarousel($scope, false);
+                cycleTutorialCarousel($scope);
+              }
+            });
+          }
+
+          video.onplaying = function(){
+            setVideoUiState($card, true);
+          };
 
           video.onended = function(){
-            $btn.removeClass('ct_hide_play');
-            $pauseBtn.addClass('ct_hide_play');
-            owl.trigger('play.owl.autoplay',[bannerAutoplayTimeout]);
+            setVideoUiState($card, false);
+            if (isOwl) {
+              lockOwlCarousel(false);
+              owl.trigger('play.owl.autoplay',[bannerAutoplayTimeout]);
+            } else {
+              lockTutorialCarousel($scope, false);
+              cycleTutorialCarousel($scope);
+            }
           };
 
           video.onpause = function(){
             if (video.currentTime === 0 || video.ended) return;
-            $btn.removeClass('ct_hide_play');
-            $pauseBtn.addClass('ct_hide_play');
-            owl.trigger('play.owl.autoplay',[bannerAutoplayTimeout]);
+            setVideoUiState($card, false);
+            if (isOwl) {
+              lockOwlCarousel(false);
+              owl.trigger('play.owl.autoplay',[bannerAutoplayTimeout]);
+            } else {
+              lockTutorialCarousel($scope, false);
+            }
           };
         });
 
@@ -143,10 +249,39 @@
           var video = $card.find('video').get(0);
           var $playBtn = $card.find('.ct_video_play');
           if (!video) return;
+
+          var $scope = $card.closest('.ct_app_screen_shot, #tutorialCarousel');
+          var isOwl = $scope.is('.ct_app_screen_shot');
+
           video.pause();
           $btn.addClass('ct_hide_play');
           $playBtn.removeClass('ct_hide_play');
-          owl.trigger('play.owl.autoplay',[bannerAutoplayTimeout]);
+
+          if (isOwl) {
+            lockOwlCarousel(false);
+            owl.trigger('play.owl.autoplay',[bannerAutoplayTimeout]);
+          } else {
+            lockTutorialCarousel($scope, false);
+          }
+        });
+
+        $(document).on('click', '.ct_song_card video', function(){
+          var $card = $(this).closest('.ct_song_card');
+          if (this.paused) {
+            $card.find('.ct_video_play').trigger('click');
+          } else {
+            $card.find('.ct_video_pause').trigger('click');
+          }
+        });
+
+        $('#tutorialCarousel').on('slide.bs.carousel', function(e){
+          var $carousel = $(this);
+          if ($carousel.attr('data-video-playing') === '1') {
+            e.preventDefault();
+            return;
+          }
+          resetVideos($carousel);
+          cycleTutorialCarousel($carousel);
         });
 
 

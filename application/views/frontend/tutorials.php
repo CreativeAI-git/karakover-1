@@ -1,12 +1,104 @@
 <style>
     .tutorial-media {
-        height: 450px;
-        object-fit: cover;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        height: auto;
         border-radius: 15px;
     }
 
     .carousel-item {
         text-align: center;
+    }
+
+    .ct_song_card.ct_tutorial_card {
+        height: auto;
+    }
+
+    .ct_song_card.ct_tutorial_card:before {
+        opacity: 0;
+    }
+
+    .tutorial-video {
+        object-fit: contain;
+        background: #000;
+    }
+
+    .tutorial-image {
+        object-fit: cover;
+        background: #f5f5f5;
+    }
+
+    .ct_song_card.ct_tutorial_card {
+        background: #f5f5f5;
+        border-color: #df1c62;
+    }
+
+    #tutorialCarousel.ct_carousel_locked .carousel-control-prev,
+    #tutorialCarousel.ct_carousel_locked .carousel-control-next,
+    #tutorialCarousel.ct_carousel_locked .carousel-indicators button {
+        pointer-events: none;
+        opacity: 0.4;
+    }
+
+    #tutorialCarousel .carousel-control-prev,
+    #tutorialCarousel .carousel-control-next {
+        width: 48px;
+        height: 48px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.55);
+        border-radius: 50%;
+        opacity: 1;
+        transition: 0.25s ease all;
+        border: 2px solid #fff;
+    }
+
+    #tutorialCarousel .carousel-control-prev {
+        left: 12px;
+    }
+
+    #tutorialCarousel .carousel-control-next {
+        right: 12px;
+    }
+
+    #tutorialCarousel .carousel-control-prev:hover,
+    #tutorialCarousel .carousel-control-next:hover {
+        background: rgba(223, 28, 98, 0.85);
+        border-color: #df1c62;
+    }
+
+    #tutorialCarousel .carousel-control-prev-icon,
+    #tutorialCarousel .carousel-control-next-icon {
+        filter: invert(1);
+        width: 22px;
+        height: 22px;
+    }
+
+    #tutorialCarousel button.carousel-control-prev,
+    #tutorialCarousel button.carousel-control-next {
+        z-index: 9999;
+    }
+
+    #tutorialCarousel button.carousel-control-prev .carousel-control-prev-icon,
+    #tutorialCarousel button.carousel-control-next .carousel-control-next-icon {
+        filter: invert(0) !important;
+    }
+
+    .ct_video_pause {
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        background: rgba(0, 0, 0, 0.55);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        transition: 0.3s ease all;
     }
 </style>
 <section class="ct_sec_padd">
@@ -34,13 +126,23 @@
 
                                         <?php if ($file['type'] == 'image') { ?>
 
-                                            <img src="<?php echo $filePath; ?>" class="d-block w-100 tutorial-media" alt="image">
+                                            <div class="ct_song_card ct_tutorial_card">
+                                                <img src="<?php echo $filePath; ?>" class="d-block w-100 tutorial-media tutorial-image" alt="image">
+                                            </div>
 
                                         <?php } else { ?>
 
-                                            <video class="d-block w-100 tutorial-media" autoplay muted>
-                                                <source src="<?php echo $filePath; ?>" type="video/mp4">
-                                            </video>
+                                            <div class="ct_song_card ct_tutorial_card">
+                                                <video class="d-block w-100 tutorial-media tutorial-video" preload="metadata" playsinline>
+                                                    <source src="<?php echo $filePath; ?>" type="video/mp4">
+                                                </video>
+                                                <button type="button" class="ct_video_play" aria-label="Play video">
+                                                    <i class="fa-solid fa-play"></i>
+                                                </button>
+                                                <button type="button" class="ct_video_pause  ct_hide_play" aria-label="Pause video">
+                                                    <i class="fa-solid fa-pause"></i>
+                                                </button>
+                                            </div>
 
                                         <?php } ?>
 

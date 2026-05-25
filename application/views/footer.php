@@ -6,11 +6,9 @@
                         <h5 class="text-dark mb-3">Follow us on Social Media</h5>
                         <div class="footer__social">
                            <a href="javascript:void(0)" target="_new" class="insta-color"><i class="fa fa-instagram"></i></a>
-                           <a href="javascript:void(0)" class="fb-color" target="_new"><i class="fa fa-facebook"></i></a>
+                           <a href="javascript:void(0)" target="_new" class="fb-color"><i class="fa fa-facebook"></i></a>
                            <a href="javascript:void(0)" target="_new" class="youtube-color"><i class="fa fa-youtube-play"></i></a>
-                           <a href="javascript:void(0)" target="_new" class="twitter-color">
-                              <i class="fa fa-twitter"></i>
-                           </a>
+                           <a href="javascript:void(0)" target="_new" class="twitter-color"><i class="fa fa-twitter"></i></a>
                         </div>
                      </div>
                   </div>

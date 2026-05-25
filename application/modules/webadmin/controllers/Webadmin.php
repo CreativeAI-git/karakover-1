@@ -925,6 +925,7 @@ class Webadmin extends Admin_Controller
 
         $this->load->library('upload');
         $image = array();
+        $uploadImgData = []; //uploadImgData
         $ImageCount = count($files['name']);
         for ($i = 0; $i <= $ImageCount; $i++) {
             $_FILES['file']['name']       = $_FILES['image']['name'][$i];

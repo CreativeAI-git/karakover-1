@@ -104,14 +104,25 @@
           </h4>
           <ul class="social-links d-flex gap-2 list-unstyled align-items-center">
             <li>
-              <i class="fa-brands fa-facebook-f"></i>
-
+              <a href="https://www.facebook.com/profile.php?id=61574338724268" class="d-flex justify-content-center align-items-center w-100 h-100 text-white text-decoration-none" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                <i class="fa-brands fa-facebook-f"></i>
+              </a>
             </li>
             <li>
-              <i class="fa-brands fa-linkedin-in"></i>
+              <a href="https://linkedin.com/in/karakover-undefined-47b94a410" class="d-flex justify-content-center align-items-center w-100 h-100 text-white text-decoration-none" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <i class="fa-brands fa-linkedin-in"></i>
+              </a>
             </li>
-            <li><i class="fa-brands fa-instagram"></i></li>
-            <li><i class="fa-brands fa-youtube"></i></li>
+            <li>
+              <a href="javascript:void(0)" class="d-flex justify-content-center align-items-center w-100 h-100 text-white text-decoration-none" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <i class="fa-brands fa-instagram"></i>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.youtube.com/@Karakover-m7f" class="d-flex justify-content-center align-items-center w-100 h-100 text-white text-decoration-none" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                <i class="fa-brands fa-youtube"></i>
+              </a>
+            </li>
 
           </ul>
         </div>

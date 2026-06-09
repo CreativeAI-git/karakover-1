@@ -3,6 +3,25 @@
     text-align: center;
     margin-bottom: 10px
   }
+
+  google-cast-launcher {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: 10px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 3;
+    /* filter: invert(1) !important; */
+    padding: 8px;
+    background: #fff !important;
+    display: block !important;
+    border-radius: 5px;
+  }
 </style>
 
 <!-- <section class="ct_sec_padd ct_over_flow_hidden">
@@ -115,9 +134,12 @@
                       <p>Image Banner</p>
                     </div>
                   <?php } else if (!empty($banner['type']) && $banner['type'] === 'video' && !empty($banner['banner'])) { ?>
-                    <video class="ct_banner_video ct_home_media ct_home_video" preload="metadata" playsinline <?php if (!empty($banner['thumbnail_image'])) { ?>poster="<?php echo base_url('assets/home_page_banners/' . $banner['thumbnail_image']); ?>" <?php } ?>>
-                      <source src="<?php echo base_url('assets/home_page_banners/' . $banner['banner']); ?>" type="video/mp4">
-                    </video>
+                    <div class="position-relative">
+                      <google-cast-launcher></google-cast-launcher>
+                      <video class="ct_banner_video ct_home_media ct_home_video" preload="metadata" playsinline <?php if (!empty($banner['thumbnail_image'])) { ?>poster="<?php echo base_url('assets/home_page_banners/' . $banner['thumbnail_image']); ?>" <?php } ?>>
+                        <source src="<?php echo base_url('assets/home_page_banners/' . $banner['banner']); ?>" type="video/mp4">
+                      </video>
+                    </div>
                     <button type="button" class="ct_video_play" aria-label="Play video">
                       <i class="fa-solid fa-play"></i>
                     </button>
@@ -145,3 +167,17 @@
 
   </div>
 </section>
+
+<script type="text/javascript"
+  src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1">
+</script>
+<script>
+  window.__onGCastApiAvailable = function(isAvailable) {
+    if (isAvailable) {
+      cast.framework.CastContext.getInstance().setOptions({
+        receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+        autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+      });
+    }
+  };
+</script>

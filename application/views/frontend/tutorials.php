@@ -3,7 +3,7 @@
         width: 100%;
         aspect-ratio: 16 / 9;
         height: auto;
-        border-radius: 15px;
+        border-radius: 5px;
     }
 
     .carousel-item {
@@ -100,6 +100,26 @@
         z-index: 2;
         transition: 0.3s ease all;
     }
+
+
+    google-cast-launcher {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        margin-left: 10px;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 3;
+        /* filter: invert(1) !important; */
+        padding: 8px;
+        background: #fff !important;
+        display: block !important;
+        border-radius: 5px;
+    }
 </style>
 <section class="ct_sec_padd">
     <div class="container">
@@ -133,9 +153,18 @@
                                         <?php } else { ?>
 
                                             <div class="ct_song_card ct_tutorial_card">
-                                                <video class="d-block w-100 tutorial-media tutorial-video" preload="metadata" playsinline>
+                                                <!-- <video class="d-block w-100 tutorial-media tutorial-video" preload="metadata" playsinline>
                                                     <source src="<?php echo $filePath; ?>" type="video/mp4">
-                                                </video>
+                                                </video> -->
+                                                <div class="position-relative">
+                                                    <google-cast-launcher></google-cast-launcher>
+                                                    <video
+                                                        class="d-block w-100 tutorial-media tutorial-video"
+                                                        preload="metadata"
+                                                        playsinline>
+                                                        <source src="<?php echo $filePath; ?>" type="video/mp4">
+                                                    </video>
+                                                </div>
                                                 <button type="button" class="ct_video_play" aria-label="Play video">
                                                     <i class="fa-solid fa-play"></i>
                                                 </button>
@@ -178,3 +207,17 @@
         </div>
     </div>
 </section>
+
+<script type="text/javascript"
+    src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1">
+</script>
+<script>
+    window.__onGCastApiAvailable = function(isAvailable) {
+        if (isAvailable) {
+            cast.framework.CastContext.getInstance().setOptions({
+                receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+                autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+            });
+        }
+    };
+</script>

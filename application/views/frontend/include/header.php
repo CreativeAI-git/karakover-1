@@ -94,10 +94,10 @@
             <div class="ct_banner_cnt ">
               <div class="ct_font_70 text-white ct_banner_overflow_h"> <?php echo $home[0]['details']; ?></div>
               <div class="ct_app_link_btn">
-                <a href="#">
+                <a href="https://apps.apple.com/us/app/karakover/id6767812443" class="mb-2" target="_blank" rel="noopener noreferrer">
                   <img src="<?php echo site_url('frontendassets/img/app-store.svg'); ?>">
                 </a>
-                <a href="#">
+                <a href="https://play.google.com/store/apps/details?id=com.karakover.music&hl=en_IN" class="mb-2" target="_blank" rel="noopener noreferrer">
                   <img src="<?php echo site_url('frontendassets/img/app-google-play-1.svg'); ?>">
                 </a>
               </div>
